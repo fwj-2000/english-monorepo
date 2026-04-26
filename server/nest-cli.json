@@ -5,7 +5,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "tsConfigPath": "apps/server/tsconfig.app.json",
-    "webpack": true
+    "webpack": false
   },
   "generateOptions": {
     "spec": false
