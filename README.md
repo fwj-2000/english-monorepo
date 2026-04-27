@@ -69,7 +69,7 @@ npx prisma init
 nest g app ai
 nest g lib shared // 生成后端共享库
 nest g res chat --project ai
-nest g res user --project server
+nest g res user --project server //在根目录server下使用：server目录下的src生成user文件夹
 nest g mo prisma --project shared
 nest g s  prisma --project shared
 ```
@@ -98,3 +98,5 @@ pnpm --filter @en/server add @en/config@workspace:*
 ```
 
 ### 第三阶段配置数据库
+
+根目录 下 pnpm add dayjs md5 @@types/md5 -w // 安装dayjs md5 md5类型 公共的包
