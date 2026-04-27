@@ -4,8 +4,7 @@
   "sourceRoot": "apps/server/src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "tsConfigPath": "apps/server/tsconfig.app.json",
-    "webpack": false
+    "tsConfigPath": "apps/server/tsconfig.app.json"
   },
   "generateOptions": {
     "spec": false
