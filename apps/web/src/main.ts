@@ -5,6 +5,7 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import App from './App.vue'
 import router from './router'
+import focusPlugin from './directives/focus'
 
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -20,5 +21,5 @@ app.use(router)
 app.use(ElementPlus, {
   locale: zhCn,
 })
-
+app.use(focusPlugin) // 使用 focus 指令
 app.mount('#app')
