@@ -1,5 +1,5 @@
 <template>
-  <div class="w-300 mx-auto mt-10 pb-30">
+  <div class="w-[1200px] mx-auto mt-10 pb-30">
     <!-- 背景区域 -->
     <div class="relative flex justify-between rounded-[20px] p-9">
       <div
@@ -17,6 +17,7 @@
         </div>
         <div class="flex items-center gap-2 pt-10">
           <button
+            @click="showLogin"
             class="bg-indigo-700 text-white rounded-[100px] px-4 py-2 cursor-pointer text-sm block w-30 h-10"
           >
             立即学习
@@ -103,141 +104,147 @@
 </template>
 
 <script setup lang="ts">
-import Hologram from './components/Hologram.vue'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { onMounted, reactive } from 'vue'
-gsap.registerPlugin(ScrollTrigger) // 注册ScrollTrigger插件
-const stats = reactive([
-  { value: 0, suffix: '+', label: '累计学员', target: 1000000 },
-  { value: 0, suffix: '+', label: '精品课程', target: 500 },
-  { value: 0, suffix: '%', label: '学员满意度', target: 98 },
-  { value: 0, suffix: '+', label: '学习时长(小时)', target: 5000000 },
-])
-const abouts = [
-  {
-    icon: '🖼️',
-    title: 'AI情境学习',
-    content: '沉浸式场景模拟，让你在真实语境中自然习得英语，告别枯燥的死记硬背。',
-  },
-  {
-    icon: '🧠',
-    title: '智能对话练习',
-    content: 'AI 实时纠错反馈，个性化对话训练，24小时随时练习口语表达。',
-  },
-  {
-    icon: '🎤',
-    title: '科学词汇记忆',
-    content: '基于艾宾浩斯遗忘曲线，智能安排复习计划，让单词真正记住。',
-  },
-]
+  import Hologram from './components/Hologram.vue'
+  import { gsap } from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { onMounted, reactive } from 'vue'
+  import { useLogin } from '@/hooks/useLogin'
+  const { login } = useLogin()
+  gsap.registerPlugin(ScrollTrigger)
+  const stats = reactive([
+    { value: 0, suffix: '+', label: '累计学员', target: 1000000 },
+    { value: 0, suffix: '+', label: '精品课程', target: 500 },
+    { value: 0, suffix: '%', label: '学员满意度', target: 98 },
+    { value: 0, suffix: '+', label: '学习时长(小时)', target: 5000000 },
+  ])
+  const abouts = [
+    {
+      icon: '🖼️',
+      title: 'AI情境学习',
+      content: '沉浸式场景模拟，让你在真实语境中自然习得英语，告别枯燥的死记硬背。',
+    },
+    {
+      icon: '🧠',
+      title: '智能对话练习',
+      content: 'AI 实时纠错反馈，个性化对话训练，24小时随时练习口语表达。',
+    },
+    {
+      icon: '🎤',
+      title: '科学词汇记忆',
+      content: '基于艾宾浩斯遗忘曲线，智能安排复习计划，让单词真正记住。',
+    },
+  ]
 
-const initProject = () => {
-  //数字滚动动画
-  stats.forEach((item) => {
-    gsap.to(item, {
-      value: item.target, //目标值
-      duration: 2, //持续时间
-      ease: 'power2.inOut', //过度动画
+  const initProject = () => {
+    //数字滚动动画
+    stats.forEach(item => {
+      gsap.to(item, {
+        value: item.target, //目标值
+        duration: 2, //持续时间
+        ease: 'power2.inOut', //过度动画
+      })
     })
-  })
-  //卡片过度
-  const cards = gsap.utils.toArray('.about-card') as HTMLElement[]
-  console.log(cards)
-  cards.forEach((card, index) => {
+    //卡片过度
+    const cards = gsap.utils.toArray('.about-card') as HTMLElement[]
+    cards.forEach((card, index) => {
+      gsap.fromTo(
+        card,
+        {
+          opacity: 0,
+          y: 40,
+          scale: 0.98,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.5,
+          delay: index * 0.08,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: '.cards-container',
+            start: 'top 75%',
+          },
+        }
+      )
+    })
+    //文字过度
     gsap.fromTo(
-      card,
+      '.text-why',
       {
         opacity: 0,
-        y: 40,
-        scale: 0.98,
+        y: 60,
       },
       {
         opacity: 1,
         y: 0,
-        scale: 1,
-        duration: 0.5,
-        delay: index * 0.08,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: '.cards-container',
-          start: 'top 75%',
-        },
-      },
+      }
     )
-  })
-  //文字过度
-  gsap.fromTo(
-    '.text-why',
-    {
-      opacity: 0,
-      y: 60,
-    },
-    {
-      opacity: 1,
-      y: 0,
-    },
-  )
-  gsap.fromTo(
-    '.text-why-content',
-    {
-      opacity: 0,
-      y: 60,
-    },
-    {
-      opacity: 1,
-      y: 0,
-    },
-  )
-  //核心优势文字过度
-  gsap.fromTo(
-    '.text-core',
-    {
-      opacity: 0,
-      y: 60,
-    },
-    {
-      opacity: 1,
-      y: 0,
-      scrollTrigger: {
-        trigger: '.text-core',
-        start: 'top 70%',
+    gsap.fromTo(
+      '.text-why-content',
+      {
+        opacity: 0,
+        y: 60,
       },
-    },
-  )
-  gsap.fromTo(
-    '.core-title',
-    {
-      opacity: 0,
-      y: 60,
-    },
-    {
-      opacity: 1,
-      y: 0,
-      scrollTrigger: {
-        trigger: '.core-title',
-        start: 'top 70%',
+      {
+        opacity: 1,
+        y: 0,
+      }
+    )
+    //核心优势文字过度
+    gsap.fromTo(
+      '.text-core',
+      {
+        opacity: 0,
+        y: 60,
       },
-    },
-  )
-  gsap.fromTo(
-    '.core-content',
-    {
-      opacity: 0,
-      y: 60,
-    },
-    {
-      opacity: 1,
-      y: 0,
-      scrollTrigger: {
-        trigger: '.core-content',
-        start: 'top 70%',
+      {
+        opacity: 1,
+        y: 0,
+        scrollTrigger: {
+          trigger: '.text-core',
+          start: 'top 70%',
+        },
+      }
+    )
+    gsap.fromTo(
+      '.core-title',
+      {
+        opacity: 0,
+        y: 60,
       },
-    },
-  )
-}
+      {
+        opacity: 1,
+        y: 0,
+        scrollTrigger: {
+          trigger: '.core-title',
+          start: 'top 70%',
+        },
+      }
+    )
+    gsap.fromTo(
+      '.core-content',
+      {
+        opacity: 0,
+        y: 60,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        scrollTrigger: {
+          trigger: '.core-content',
+          start: 'top 70%',
+        },
+      }
+    )
+  }
 
-onMounted(() => {
-  initProject()
-})
+  const showLogin = () => {
+    login().then(() => {
+      console.log('登录成功之后跳转页面')
+    })
+  }
+  onMounted(() => {
+    initProject()
+  })
 </script>

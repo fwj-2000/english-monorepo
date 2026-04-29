@@ -1,22 +1,28 @@
 import { Injectable } from '@nestjs/common';
-// 每个业务文件都会用，如果user文件想用：用以下步骤
-/**
- * user 文件的module 中引入 response.module
- * user文件中的 service 中引入 response.service
- *  */
+const Business = {
+  SUCCESS: {
+    code: 200,
+    message: 'success',
+  },
+  ERROR: {
+    code: 500,
+    message: 'error',
+  },
+}
 @Injectable()
 export class ResponseService {
-  success(data: any, message: string = '操作成功', code: number = 200) {
+  success(data: any) {
+    return {
+      data,
+      code: Business.SUCCESS.code,
+      message: Business.SUCCESS.message,
+    }
+  }
+  error(data = null, message: string, code: number = Business.ERROR.code) {
     return {
       data,
       code,
-      message,
-    };
-  }
-  error(message: string = '操作失败', code: number = 200) {
-    return {
-      code,
-      message,
-    };
+      message: message || Business.ERROR.message,
+    }
   }
 }
