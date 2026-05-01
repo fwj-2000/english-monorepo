@@ -1,20 +1,89 @@
 import axios from 'axios'
+import { useUserStore } from '@/stores/user'
+import router from '@/router' //路由
+import { ElMessage } from 'element-plus' //引入element-plus的提示框
+import { refreshTokenApi } from './auth' //刷新token接口
 export const timeout = 50000
+
+//server服务器接口
 export const serverApi = axios.create({
     baseURL: '/api/v1',
     timeout,
 })
-
-serverApi.interceptors.response.use(res=>{
+let isRefreshing = false //是否正在刷新token
+let requestQueue: ((newAccessToken: string) => void)[] = [] //存储失败的请求
+//请求拦截器
+serverApi.interceptors.request.use(config => {
+    const userStore = useUserStore()
+    if (userStore.getAccessToken) {
+        config.headers.Authorization = `Bearer ${userStore.getAccessToken}`
+    }
+    return config
+})
+//响应拦截器
+serverApi.interceptors.response.use(res => {
     return res.data
+}, async error => {
+    if (error.code === "ERR_NETWORK") {
+        ElMessage.error('网络连接失败,请重试')
+        return Promise.reject(error)
+    }
+    if (error.response.status !== 401) {
+        //其他code码就直接抛出异常
+        return Promise.reject(error)
+    }
+    //下面的逻辑就是处理401的情况了
+    const userStore = useUserStore()
+    const accessToken = userStore.getAccessToken
+    const refreshToken = userStore.getRefreshToken
+    const originalRequest = error.config //保存了失败的那个请求的所有信息（URL、参数、方法等），后面刷新成功后要用它重试
+
+    // 如果连 refresh token 都没有，说明用户根本没登录或者登录信息全丢了，直接让用户重新登录。
+    if (!accessToken || !refreshToken) {
+        userStore.logout() //清空user
+        router.replace('/') //跳转到首页
+        ElMessage.error('登录已过期,请重新登录') //新增提示
+        return Promise.reject(error)
+    }
+    if (isRefreshing) {
+        return new Promise((resolve) => {
+            requestQueue.push((newAccessToken: string) => {
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+                resolve(serverApi(originalRequest))
+            })
+        })
+    }
+    //刷新token调用接口
+    isRefreshing = true
+    try {
+        const newToken = await refreshTokenApi({ refreshToken: refreshToken })
+        if (newToken.success) {
+            //切换成功更新token到pinia中
+            userStore.updateToken(newToken.data)
+        } else {
+            userStore.logout() //清空user
+            ElMessage.error('登录已过期,请重新登录') //新增提示
+            router.replace('/') //跳转到首页
+            return Promise.reject(error)
+        }
+        const newAccessToken = newToken.data.accessToken
+        requestQueue.forEach(callback => callback(newAccessToken)) //执行存储的请求
+        return serverApi(originalRequest)
+    } catch (error) {
+        return Promise.reject(error)
+    } finally {
+        requestQueue = [] //清空队列
+        isRefreshing = false //重置刷新状态
+    }
 })
 
+//ai服务器接口
 export const aiApi = axios.create({
     baseURL: '/api/ai/v1',
     timeout,
 })
 
-aiApi.interceptors.response.use(res=>{
+aiApi.interceptors.response.use(res => {
     return res.data
 })
 
@@ -26,4 +95,4 @@ export interface Response<T = any> {
     code: number,
     success: boolean,
     data: T
-}
+} 

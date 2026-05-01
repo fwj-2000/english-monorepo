@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
-import type { UserLogin, UserRegister } from "@en/common/user/index"
+import type { UserLogin, UserRegister, Token } from "@en/common/user/index"
+
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
@@ -15,5 +16,11 @@ export class UserController {
   @Post('register')
   register(@Body() createUserDto: UserRegister) {
     return this.userService.register(createUserDto);
+  }
+
+  // 刷新token
+  @Post('refresh-token')
+  refreshToken(@Body() refreshTokenDto: Omit<Token, 'accessToken'>) {
+    return this.userService.refreshToken(refreshTokenDto);
   }
 }

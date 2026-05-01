@@ -1,24 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService, ResponseService } from '@libs/shared';
-import type { Prisma } from '@libs/shared/generated/prisma/client';
-import type { UserLogin, UserRegister, ResultUser } from "@en/common/user/index"
-type UserSelectWithoutPassword = Omit<Prisma.UserSelect, 'password'>;
-const newSelect: UserSelectWithoutPassword = {
-  id: true,
-  name: true,
-  email: true,
-  phone: true,
-  address: true,
-  avatar: true,
-  lastLoginAt: true,
-  wordNumber: true,
-  dayNumber: true,
-  createdAt: true,
-  updatedAt: true,
-}
+import type { Prisma } from '@libs/shared/generated/prisma/client'; //  导入 Prisma 客户端类型定义
+import type { UserLogin, UserRegister, ResultUser, Token, RefreshTokenPayload } from "@en/common/user/index"
+import { AuthService } from '../auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { newSelect } from './user.select';
+
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService, private readonly response: ResponseService) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly response: ResponseService,
+    private readonly authService: AuthService,
+    private readonly jwtService: JwtService
+  ) {
   }
 
   async login(createUserDto: UserLogin) {
@@ -37,7 +32,12 @@ export class UserService {
       select: newSelect
     })
     //  4. 生成token 返回用户信息和token
-    return this.response.success(updateUser);
+    const token = this.authService.generateToken({
+      userId: updateUser.id,
+      name: updateUser.name,
+      email: updateUser.email
+    });
+    return this.response.success({ ...updateUser, token });
   }
 
   async register(createUserDto: UserRegister) {
@@ -72,7 +72,32 @@ export class UserService {
       data: newUser,
       select: newSelect
     })
-    return this.response.success(userRes);
+    const tokens = this.authService.generateToken({
+      userId: userRes.id,
+      name: userRes.name,
+      email: userRes.email
+    });
+    return this.response.success({ ...userRes, tokens });
+  }
+
+  async refreshToken(createUserDto: Omit<Token, 'accessToken'>) {
+    //1. 验证refreshToken是否有效 verify检查token是否有效 并且返回解码后的数据 sign生成token
+    try {
+      const decoded = this.jwtService.verify<RefreshTokenPayload>(createUserDto.refreshToken);
+      console.log('refreshToken decoded', decoded);
+
+      //2.为什么增加这么一个判断 accessToken 冒充refreshToken 进行攻击
+      if (decoded.tokenType !== 'refresh') return this.response.error(null, 'refreshToken已过期或无效');
+      const user = await this.prismaService.user.findUnique({ where: { id: decoded.userId } })
+
+      //3.如果查不出来说明userId是伪造的
+      if (!user) return this.response.error(null, '用户不存在');
+      const token = this.authService.generateToken({ userId: user.id, name: user.name, email: user.email });
+      return this.response.success(token);
+    }
+    catch (error) {
+      return this.response.error(null, 'refreshToken已过期或无效');
+    }
   }
 
 }
