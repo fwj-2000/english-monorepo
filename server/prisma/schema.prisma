@@ -4,8 +4,8 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../libs/shared/src/generated/prisma"//类型呢表存放地址
+  provider     = "prisma-client"
+  output       = "../libs/shared/src/generated/prisma" //类型呢表存放地址
   moduleFormat = "cjs"
 }
 
@@ -20,6 +20,7 @@ enum TradeStatus {
   TRADE_SUCCESS // 交易成功 可退款
   TRADE_FINISHED // 交易结束 不可退款
 }
+
 //用户表
 model User {
   id              String           @id @default(cuid()) // 用户ID
@@ -29,6 +30,9 @@ model User {
   address         String? // 地址
   password        String // 密码
   avatar          String? // 头像
+  bio             String? // 签名  第七集新增字段
+  isTimingTask    Boolean          @default(false) // 是否开启定时任务 第七集新增字段
+  timingTaskTime  String           @default("00:00:00") //定时任务时间默认晚上0点开始，每隔24小时执行一次 第七集新增字段
   wordNumber      Int              @default(0) // 单词数量
   dayNumber       Int              @default(0) // 打卡天数
   createdAt       DateTime         @default(now()) // 创建时间
@@ -99,6 +103,7 @@ model PaymentRecord {
   updatedAt     DateTime       @updatedAt // 更新时间
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseRecords CourseRecord[]
+
   @@index([tradeNo])
 }
 
