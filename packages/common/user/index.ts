@@ -19,12 +19,15 @@ export type UserLogin = Pick<User, 'phone' | 'password'>
 export type UserRegister = Pick<User, 'name' | 'phone' | 'email' | 'password'>
 //返回的类型,不包含密码
 export type ResultUser = Omit<User, 'password'>
+
 //token的类型
 export type Token = {
     accessToken: string // 访问令牌
     refreshToken: string // 刷新令牌
 }
 //返回的类型,包含token
-export type WebResultUser = ResultUser & {
-    token: Token
-}
+export type WebResultUser = ResultUser & { token: Token }
+// token的载荷类型 
+export type TokenPayload = Pick<User, 'name' | 'email'> & { userId: string; }
+// 刷新token的载荷类型
+export type RefreshTokenPayload = TokenPayload & { tokenType: 'access' | 'refresh'; }
