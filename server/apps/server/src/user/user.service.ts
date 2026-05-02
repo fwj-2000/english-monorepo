@@ -6,13 +6,16 @@ import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { newSelect } from './user.select';
 
+import { MinioService } from '@libs/shared/minio/minio.service';
+
 @Injectable()
 export class UserService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly response: ResponseService,
     private readonly authService: AuthService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly minioService: MinioService
   ) {
   }
 
@@ -98,6 +101,35 @@ export class UserService {
     catch (error) {
       return this.response.error(null, 'refreshToken已过期或无效');
     }
+  }
+
+  async uploadAvatar(file: Express.Multer.File) {
+    if (!file) {
+      return this.response.error(null, '请选择文件');
+    }
+    if (file.size > 1024 * 1024 * 5) {
+      return this.response.error(null, '文件大小不能超过5M');
+    }
+    // 获取minio客户端
+    const client = this.minioService.getClient();
+    // 获取bucket 就是上传到minio的那个目录下（一般叫做桶）
+    const bucket = this.minioService.getBucket();
+    // 获取资源名字 
+    const fileName = `${Date.now()}-${file.originalname}`;
+    // 上传minio中 putObject
+    await client.putObject(bucket, fileName, file.buffer, file.size, {
+      'Content-Type': file.mimetype
+    });
+    // 返回 文件地址 预览地址
+    const isHttps = this.minioService.getIsHttps();
+    const baseUrl = isHttps ? 'https' : 'http';
+    const port = this.minioService.getPort();// 获取端口
+    const databaseUrl = `${bucket}/${fileName}`;
+    // databaseUrl  /avatar/xxxx.png
+    const previewUrl = `${baseUrl}://${this.minioService.getEndpoint()}:${port}/${databaseUrl}`;
+    // previewUrl  http://192.168.1.100:9000/avatar/xxxx.png
+    return this.response.success({ databaseUrl, previewUrl });
+
   }
 
 }

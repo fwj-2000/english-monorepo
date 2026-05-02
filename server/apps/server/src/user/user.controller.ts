@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import type { UserLogin, UserRegister, Token } from "@en/common/user/index"
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(
+    private readonly userService: UserService,
+  ) { }
 
   // 登录
   @Post('login')
@@ -23,4 +26,12 @@ export class UserController {
   refreshToken(@Body() refreshTokenDto: Omit<Token, 'accessToken'>) {
     return this.userService.refreshToken(refreshTokenDto);
   }
+
+  //文件上传 参考：https://docs.nestjs.com/techniques/file-upload
+  @Post('upload-avatar')
+  @UseInterceptors(FileInterceptor('file')) //限制前端的key必须是file
+  uploadAvatar(@UploadedFile() file: Express.Multer.File) {
+    return this.userService.uploadAvatar(file);
+  }
+
 }

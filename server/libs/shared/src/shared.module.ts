@@ -4,11 +4,12 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ResponseModule } from './response/response.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MinioModule } from './minio/minio.module';
 
 @Global()
 @Module({
   providers: [SharedService],
-  exports: [SharedService, PrismaModule, ResponseModule, JwtModule],
+  exports: [SharedService, PrismaModule, ResponseModule, JwtModule, ConfigModule, MinioModule],
   imports: [
     PrismaModule,
     ResponseModule,
@@ -24,6 +25,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: 10 }, //10秒过期 这里方便测试  生产环境正常就是7天 7d
       }),
       inject: [ConfigService],
-    })],
+    }),
+    MinioModule
+  ],
 })
 export class SharedModule { }
