@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto w-300 px-4 py-6">
+  <div class="mx-auto w-[1200px] px-4 py-6">
     <div class="flex items-center justify-between">
       <div>
         <div class="text-xl font-extrabold text-slate-900">设置</div>
@@ -128,9 +128,9 @@
   import type { FormRules } from 'element-plus'
   import avatar from '@/assets/images/avatar/default-avatar.png'
   import { useUserStore } from '@/stores/user'
-  //   import { uploadAvatar } from '@/apis/user' //上传头像接口
+  import { uploadAvatar } from '@/apis/user' //上传头像接口
   import type { UploadFile, FormInstance } from 'element-plus' //上传文件类型
-  //   import { updateUser } from '@/apis/user' //更新用户信息接口
+  import { updateUser } from '@/apis/user' //更新用户信息接口
   import { ElMessage, ElMessageBox } from 'element-plus' //提示信息
   import { useAvatar } from '@/hooks/useAvatar'
   import { useLogin } from '@/hooks/useLogin'
@@ -150,15 +150,15 @@
   })
   //上传头像
   const onAvatarSelect = async (file: UploadFile) => {
-    // const formData = new FormData()
-    // formData.append('file', file.raw as File)
-    // const res = await uploadAvatar(formData)
-    // if (res.success && res.data) {
-    //   form.value.avatar = res.data.databaseUrl
-    //   previewUrl.value = res.data.previewUrl
-    // } else {
-    //   ElMessage.error(res.message)
-    // }
+    const formData = new FormData()
+    formData.append('file', file.raw as File)
+    const res = await uploadAvatar(formData)
+    if (res.success && res.data) {
+      form.value.avatar = res.data.databaseUrl
+      previewUrl.value = res.data.previewUrl
+    } else {
+      ElMessage.error(res.message)
+    }
   }
   //表单验证规则
   const rules: FormRules = {
@@ -183,14 +183,14 @@
   }
   //提交保存接口的
   const onSave = async () => {
-    // await formRef.value?.validate()
-    // const res = await updateUser(form.value)
-    // if (res.success && res.data) {
-    //   userStore.updateUser(res.data) //更新用户信息
-    //   ElMessage.success('更新成功')
-    // } else {
-    //   ElMessage.error(res.message)
-    // }
+    await formRef.value?.validate()
+    const res = await updateUser(form.value)
+    if (res.success && res.data) {
+      userStore.updateUser(res.data) //更新用户信息
+      ElMessage.success('更新成功')
+    } else {
+      ElMessage.error(res.message)
+    }
   }
   //退出登录
   const logoutHandle = () => {
@@ -205,10 +205,10 @@
 
   const init = () => {
     //如果用户登录了，则获取用户信息
-    // if (userStore.getUser) {
-    //   form.value = { ...userStore.getUpdateUserInfo }
-    //   previewUrl.value = customAvatar(form.value.avatar!)
-    // }
+    if (userStore.getUser) {
+      form.value = { ...userStore.getUpdateUserInfo }
+      previewUrl.value = customAvatar(form.value.avatar!)
+    }
   }
 
   onMounted(() => {

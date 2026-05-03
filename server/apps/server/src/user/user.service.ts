@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService, ResponseService } from '@libs/shared';
 import type { Prisma } from '@libs/shared/generated/prisma/client'; //  导入 Prisma 客户端类型定义
-import type { UserLogin, UserRegister, ResultUser, Token, RefreshTokenPayload } from "@en/common/user/index"
+import type { UserLogin, UserRegister, ResultUser, Token, RefreshTokenPayload, UserUpdate } from "@en/common/user/index"
 import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { newSelect } from './user.select';
+import { newSelect, updateUserSelect } from './user.select';
 
 import { MinioService } from '@libs/shared/minio/minio.service';
+import type { Request } from 'express';
 
 @Injectable()
 export class UserService {
@@ -124,12 +125,28 @@ export class UserService {
     const isHttps = this.minioService.getIsHttps();
     const baseUrl = isHttps ? 'https' : 'http';
     const port = this.minioService.getPort();// 获取端口
-    const databaseUrl = `${bucket}/${fileName}`;
+    const databaseUrl = `/${bucket}/${fileName}`;
     // databaseUrl  /avatar/xxxx.png
     const previewUrl = `${baseUrl}://${this.minioService.getEndpoint()}:${port}/${databaseUrl}`;
     // previewUrl  http://192.168.1.100:9000/avatar/xxxx.png
     return this.response.success({ databaseUrl, previewUrl });
 
+  }
+  async updateUser(updateUserDto: UserUpdate, user: Request['user']) {
+    const updatedUser = await this.prismaService.user.update({
+      where: { id: user.userId },
+      data: {
+        name: updateUserDto.name,
+        email: updateUserDto.email,
+        address: updateUserDto.address,
+        avatar: updateUserDto.avatar,
+        bio: updateUserDto.bio,
+        isTimingTask: updateUserDto.isTimingTask,
+        timingTaskTime: updateUserDto.timingTaskTime,
+      },
+      select: updateUserSelect
+    })
+    return this.response.success(updatedUser);
   }
 
 }

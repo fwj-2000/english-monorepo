@@ -16,3 +16,12 @@ export const newSelect: UserSelectWithoutPassword = {
   isTimingTask: true, //是否开启定时任务 第七集新增
   timingTaskTime: true, //定时任务时间 第七集新增
 }
+export const updateUserSelect: UserSelectWithoutPassword = {
+  name: true,
+  email: true,
+  address: true,
+  avatar: true,
+  bio: true, //签名 第七集新增
+  isTimingTask: true, //是否开启定时任务 第七集新增
+  timingTaskTime: true, //定时任务时间 第七集新增
+}
