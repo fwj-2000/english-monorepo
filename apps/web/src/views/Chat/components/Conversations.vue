@@ -17,12 +17,21 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { onMounted, ref } from 'vue'
   import type { ChatMode, ChatModeList } from '@en/common/chat'
+  import { getChatMode } from '@/apis/chat'
 
   const active = ref<string | null>(null)
   const chatMode = ref<ChatModeList>([])
   const changeActive = (value: ChatMode) => {
     active.value = value.id
   }
+
+  const getChatModeLsit = async () => {
+    const res = await getChatMode()
+    chatMode.value = res.data
+  }
+  onMounted(() => {
+    getChatModeLsit()
+  })
 </script>

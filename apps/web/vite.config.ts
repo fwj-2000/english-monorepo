@@ -14,6 +14,11 @@ export default defineConfig({
         target: `http://localhost:${Config.ports.server}`,
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      '/ai': {
+        target: `http://localhost:${Config.ports.ai}`,
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/ai/, '')
       }
     },
     port: Config.ports.web,
