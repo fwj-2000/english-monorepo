@@ -13,6 +13,8 @@ async function bootstrap() {
     type: VersioningType.URI,
     defaultVersion: '1',
   });//版本号设置到url中，例如：/api/v1/xxx
+  // 页面上访问接口就是 http://localhost:3000/api/v1/xxxxxxx
   await app.listen(Config.ports.server);
+  console.log('✅ Nest server 服务启动成功！',);
 }
 bootstrap();
