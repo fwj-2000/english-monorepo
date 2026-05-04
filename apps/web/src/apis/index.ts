@@ -3,7 +3,7 @@ import { useUserStore } from '@/stores/user'
 import router from '@/router' //路由
 import { ElMessage } from 'element-plus' //引入element-plus的提示框
 import { refreshTokenApi } from './auth' //刷新token接口
-export const uploadUrl = import.meta.env.DEV ? 'http://172.20.10.5:9000' : 'http://线上地址待定'
+export const uploadUrl = import.meta.env.DEV ? 'http://172.20.10.3:9000' : 'http://线上地址待定'
 export const timeout = 50000
 
 //server服务器接口

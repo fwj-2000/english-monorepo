@@ -17,21 +17,25 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
-  import type { ChatMode, ChatModeList } from '@en/common/chat'
+  import { ref, onMounted } from 'vue'
+  import type { ChatModeList, ChatMode } from '@en/common/chat'
   import { getChatMode } from '@/apis/chat'
-
-  const active = ref<string | null>(null)
-  const chatMode = ref<ChatModeList>([])
+  const emits = defineEmits(['onGetRole'])
+  const chatMode = ref<ChatModeList>([]) //消息模式列表
+  const active = ref<string | null>(null) //当前激活的id
+  //切换消息模式
   const changeActive = (value: ChatMode) => {
     active.value = value.id
+    emits('onGetRole', value.role) //派发role
   }
-
-  const getChatModeLsit = async () => {
+  //获取消息模式列表
+  const getChatModeList = async () => {
     const res = await getChatMode()
     chatMode.value = res.data
+    active.value = res.data[0]?.id ?? null //默认选中第一个
+    emits('onGetRole', res.data[0]?.role) //派发role
   }
   onMounted(() => {
-    getChatModeLsit()
+    getChatModeList()
   })
 </script>
