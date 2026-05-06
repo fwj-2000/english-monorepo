@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Res, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Query, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import type { ChatDto, ChatRoleType } from '@en/common/chat'
 import type { Response } from 'express';
-
+import { AuthGuard } from '@libs/shared/auth/auth.guard';
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) { }
@@ -30,6 +30,7 @@ export class ChatController {
   }
 
   @Get('history')
+  @UseGuards(AuthGuard)
   findAll(@Query('userId') userId: string, @Query('role') role: ChatRoleType) {
     return this.chatService.findAll(userId, role);
   }

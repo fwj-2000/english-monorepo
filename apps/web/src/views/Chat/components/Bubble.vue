@@ -70,6 +70,20 @@
           placeholder="请输入内容"
         />
         <el-button class="ml-2" :icon="Position" type="primary" @click="sendMessage"></el-button>
+        <el-button
+          v-if="!isRecording"
+          class="ml-2"
+          :icon="Mic"
+          type="primary"
+          @click="startRecording"
+        ></el-button>
+        <el-button
+          v-else
+          class="ml-2"
+          :icon="VideoPause"
+          type="primary"
+          @click="stopRecording"
+        ></el-button>
       </div>
     </div>
   </div>
@@ -77,10 +91,15 @@
 
 <script setup lang="ts">
   import { ref, useTemplateRef, watch, nextTick } from 'vue'
-  import { Position } from '@element-plus/icons-vue'
+  import { Position, Mic, VideoPause } from '@element-plus/icons-vue'
   import type { ChatMessageList } from '@en/common/chat'
   import { marked } from 'marked'
   import '@/assets/css/deep-seek.css'
+  import { useVoiceToText } from '@/hooks/useVoiceToText'
+  const { isRecording, start, stop } = useVoiceToText({
+    lang: 'zh-CN',
+    continuous: true,
+  })
   const deepThink = ref(false) //深度思考
   const webSearch = ref(false) //联网搜索
   const emits = defineEmits(['onSendMessage'])
@@ -99,6 +118,18 @@
   const parseMarkdown = (content: string) => {
     if (!content) return ''
     return marked.parse(content)
+  }
+  //开始录音
+  const startRecording = () => {
+    start(result => {
+      console.log("🚀 ~ startRecording ~ result:", result)
+      message.value = result
+    })
+  }
+  //停止录音
+  const stopRecording = () => {
+    stop()
+    sendMessage()
   }
   //监听消息列表，滚动到最底部
   watch(
