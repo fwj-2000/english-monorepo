@@ -30,7 +30,7 @@ export class ChatController {
   }
 
   @Get('history')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   findAll(@Query('userId') userId: string, @Query('role') role: ChatRoleType) {
     return this.chatService.findAll(userId, role);
   }

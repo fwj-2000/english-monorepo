@@ -3,6 +3,7 @@ import home from './home/index'
 import wordBook from './word-book/index'
 import setting from './setting/index'
 import chat from './chat/index'
+import course from './course/index'
 import { useUserStore } from '@/stores/user'
 import { isShowLoginDialog } from '@/stores/loginDialog'
 
@@ -12,7 +13,8 @@ const router = createRouter({
     ...home,      // 主页 - 无需登录
     ...wordBook,  // 词库 - 无需登录
     ...setting,   // 设置 - 需登录
-    ...chat       // AI 聊天 - 需登录
+    ...chat,       // AI 聊天 - 需登录
+    ...course, //课程
   ]
 })
 
