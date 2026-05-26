@@ -6,7 +6,7 @@ export interface Course {
   description: string;
   teacher: string;
   url: string;
-  price: number;
+  price: string; // 课程价格
 }
 
 export type CourseList = Course[];

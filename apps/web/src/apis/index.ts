@@ -4,6 +4,8 @@ import router from '@/router' //路由
 import { ElMessage } from 'element-plus' //引入element-plus的提示框
 import { refreshTokenApi } from './auth' //刷新token接口
 export const uploadUrl = import.meta.env.VITE_MINIO_ENDPOINT
+export const socketUrl = import.meta.env.VITE_SOCKET_URL
+
 console.log("🚀 ~ uploadUrl:", uploadUrl)
 export const timeout = 50000
 
