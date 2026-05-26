@@ -43,6 +43,9 @@ export const useUserStore = defineStore('user', () => {
       timingTaskTime: user.value!.timingTaskTime,
     }
   })
-
-  return { user, setUser, getUser, logout, getAccessToken, getRefreshToken, updateToken, updateUser, getUpdateUserInfo }
+  //更新用户单词数量
+  const updateUserWordNumber = (wordNumber: number) => {
+    user.value!.wordNumber = wordNumber
+  }
+  return { user, setUser, getUser, logout, getAccessToken, getRefreshToken, updateToken, updateUser, getUpdateUserInfo, updateUserWordNumber }
 }, { persist: true }) //持久化存储localStorage

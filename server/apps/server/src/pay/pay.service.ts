@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import type { CreatePayDto } from '@en/common/pay';
-import type { TokenPayload } from '@en/common/user'
-import { PrismaService, PayService as SharedPayService, ResponseService } from '@libs/shared'
-import * as nanoid from 'nanoid'
-import dayjs from 'dayjs'
+import type { TokenPayload } from '@en/common/user';
+import { PrismaService, PayService as SharedPayService, ResponseService } from '@libs/shared';
+import * as nanoid from 'nanoid';
+import dayjs from 'dayjs';
 import { ConfigService } from '@nestjs/config';
 import type { Request } from 'express';
 import { TradeStatus } from '@libs/shared/generated/prisma/enums'
@@ -14,17 +14,15 @@ import { SocketGateway } from '../socket/socket.gateway';
 export class PayService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly sharedPayService: SharedPayService,
     private readonly configService: ConfigService,
     private readonly responseService: ResponseService,
     private readonly socketGateway: SocketGateway,
-  ) { }
+    private readonly sharedPayService: SharedPayService) { }
 
   private createTradeNo() {
-    const prifix = 'EN'; // 订单号前缀
-    return `${prifix}-${nanoid.nanoid(12)}`; // 生成唯一订单号
+    const prifix = 'XM';//订单前缀
+    return `${prifix}-${nanoid.nanoid(12)}`;
   }
-
   async create(createPayDto: CreatePayDto, user: TokenPayload) {
     //购买过课程不能重复购买
     const courseRecord = await this.prismaService.courseRecord.findFirst({
@@ -36,11 +34,9 @@ export class PayService {
     if (courseRecord) {
       return this.responseService.error(null, '您已经购买过该课程',);
     }
-
-    // 用数据库的事务处理下面逻辑
-    const outTradeNo = this.createTradeNo()
     const result = await this.prismaService.$transaction(async (tx) => {
-      // 1. 创建订单表 此时状态未支付
+      //1. 创建订单表 但是状态是未支付
+      const outTradeNo = this.createTradeNo();
       await tx.paymentRecord.create({
         data: {
           userId: user.userId, //用户id
@@ -50,23 +46,19 @@ export class PayService {
           body: createPayDto.body, //支付内容
         }
       })
-      // 2 . 调用支付宝SDK 获取支付链接
-      // https://opendocs.alipay.com/open/59da99d0_alipay.trade.page.pay
-      // https://www.npmjs.com/package/alipay-sdk
-      const dateTime = dayjs().add(15, 'minute')  // 订单过期时间
-      const payUrl = this.sharedPayService.alipaySdk.pageExecute('alipay.trade.page.pay', 'GET', {
+      //2.支付宝SDK发起支付生成url
+      const dateTime = dayjs().add(15, 'minute') //当前的时间增加了一分钟 为了测试我弄的快一点
+      const payUrl = this.sharedPayService.getAlipaySdk().pageExecute("alipay.trade.page.pay", 'GET', {
         bizContent: {
-          out_trade_no: outTradeNo,
-          product_code: "FAST_INSTANT_TRADE_PAY",
-          subject: createPayDto.subject,
-          // 自定义 在回调接口会原样返回 方便回调接口使用这些参数
+          out_trade_no: outTradeNo, //订单编号
+          total_amount: createPayDto.total_amount, //支付金额
+          subject: createPayDto.subject, //支付主题
           body: JSON.stringify({
             courseId: createPayDto.courseId, //课程id
             userId: user.userId, //用户id
           }), //支付内容
-          total_amount: createPayDto.total_amount,
-          time_expire: dateTime.format('YYYY-MM-DD HH:mm:ss'),
-
+          product_code: 'FAST_INSTANT_TRADE_PAY', //产品编码
+          time_expire: dateTime.format('YYYY-MM-DD HH:mm:ss')
         },
         // 支付成功后支付宝会回调这个接口 这个接口需要公网可访问
         notify_url: `${this.configService.get<string>('ALIPAY_NOTIFY_URL')!}/api/v1/pay/notify`,

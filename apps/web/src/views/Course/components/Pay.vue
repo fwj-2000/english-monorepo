@@ -80,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watch } from 'vue'
+  import { ref, onMounted, onUnmounted } from 'vue'
   import type { Course } from '@en/common/course'
   import { ElMessage } from 'element-plus'
   import { uploadUrl } from '@/apis'
@@ -95,19 +95,28 @@
   const isPay = ref(false) //是否支付中
   const timeExpire = ref(0) //支付剩余时间
 
-  watch(modelValue, newVal => {
+  // 始终注册 socket 监听，避免因 watch 时机问题导致事件丢失
+  onMounted(() => {
     const socket = getSocket()
-    if (newVal) {
-      socket?.on('paymentSuccess', () => {
+    if (!socket) {
+      console.warn('[Pay] socket 未连接，无法监听支付结果')
+      return
+    }
+    socket.on('paymentSuccess', () => {
+      console.log('🚀 ~ paymentSuccess')
+      // 只有弹框打开时才展示支付成功提示
+      if (modelValue.value) {
         ElMessage.success({
           message: '支付成功',
-          duration: 10000, //10秒后自动关闭
+          duration: 10000,
         })
         close()
-      })
-    } else {
-      socket?.off('paymentSuccess')
-    }
+      }
+    })
+  })
+
+  onUnmounted(() => {
+    getSocket()?.off('paymentSuccess')
   })
 
   //图片地址
