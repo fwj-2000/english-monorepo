@@ -22,12 +22,10 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@libs/shared": [
-        "libs/shared/src"
-      ],
-      "@libs/shared/*": [
-        "libs/shared/src/*"
-      ]
-    }
+      "@libs/shared": ["libs/shared/src"],
+      "@libs/shared/*": ["libs/shared/src/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "types": ["multer", "express"]
   }
 }
