@@ -7,7 +7,7 @@ import { tool } from '@langchain/core/tools' //引入langchain的工具
 import marked from 'marked'
 import { Queue } from 'bullmq';
 import { digestQueueName } from './digest.queue';
-import { InjectQueue } from '@nestjs/bullmq';
+import { InjectQueue } from '@nestjs/bullmq';// 生产者
 
 @Injectable()
 export class DigestService implements OnModuleInit {
@@ -70,6 +70,14 @@ export class DigestService implements OnModuleInit {
   }
 
   async onModuleInit() {
+    this.digestQueue.add(digestQueueName.task.everyDayDigest, {}, {
+      repeat: {
+        pattern: '0 0 * * *', //每天0点执行 cron
+      }
+    })
+  }
+
+  async handleEmailDigest() {
     // 从user表找出高质量用户 取id即可
     // （
     // 打开定时任务开关的用户 
@@ -110,7 +118,7 @@ export class DigestService implements OnModuleInit {
       //   const html = await marked.parse(content as string)
       //   console.log("🚀 ~ DigestService ~ onModuleInit ~ html:", html)
       // }
-     await this.digestQueue.add(digestQueueName.task.emailDigest, {
+      await this.digestQueue.add(digestQueueName.task.emailDigest, {
         userId: '12312',
       })
     }
