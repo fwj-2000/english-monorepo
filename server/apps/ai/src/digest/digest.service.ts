@@ -5,10 +5,15 @@ import { createAgent } from 'langchain'
 import { createDeepSeek } from '../llm/llm.config'
 import { tool } from '@langchain/core/tools' //引入langchain的工具
 import marked from 'marked'
+import { Queue } from 'bullmq';
+import { digestQueueName } from './digest.queue';
+import { InjectQueue } from '@nestjs/bullmq';
+
 @Injectable()
 export class DigestService implements OnModuleInit {
   constructor(
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    @InjectQueue(digestQueueName.name) private readonly digestQueue: Queue,// https://docs.nestjs.cn/techniques/queues/#%E7%94%9F%E4%BA%A7%E8%80%85
   ) { }
   //普通的大模型他只能输出文字，他没有办法进行比如查看代码 查看图片 或者是连接数据库
   //也就是说大模型会根据我们的tool里面的描述会自动选择要不要调用这个工具
@@ -97,14 +102,17 @@ export class DigestService implements OnModuleInit {
         tools: [this.queryTool()],
         systemPrompt: '你是一个单词记忆助手，根据用户信息和单词记录，生成单词记忆报告',
       })
-      const result = await agent.invoke({
-        messages: [{ role: 'user', content: `查询用户信息,并且根据用户id关联单词记录表，查询出用户今天的单词记录,用户id: ${user.id}，过滤掉敏感信息` }]
+      // const result = await agent.invoke({
+      //   messages: [{ role: 'user', content: `查询用户信息,并且根据用户id关联单词记录表，查询出用户今天的单词记录,用户id: ${user.id}，过滤掉敏感信息` }]
+      // })
+      // const content = result.messages.at(-1)?.content
+      // if (content) {
+      //   const html = await marked.parse(content as string)
+      //   console.log("🚀 ~ DigestService ~ onModuleInit ~ html:", html)
+      // }
+     await this.digestQueue.add(digestQueueName.task.emailDigest, {
+        userId: '12312',
       })
-      const content = result.messages.at(-1)?.content
-      if (content) {
-        const html = await marked.parse(content as string)
-        console.log("🚀 ~ DigestService ~ onModuleInit ~ html:", html)
-      }
     }
   }
 }
