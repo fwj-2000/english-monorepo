@@ -78,6 +78,8 @@ export class DigestService implements OnModuleInit {
   }
 
   async handleEmailDigest() {
+    console.log("🚀 ~定时任务执行了 DigestService ~ handleEmailDigest ~ handleEmailDigest:")
+
     // 从user表找出高质量用户 取id即可
     // （
     // 打开定时任务开关的用户 
@@ -101,6 +103,8 @@ export class DigestService implements OnModuleInit {
       },
       select: {
         id: true,
+        timingTaskTime: true,
+        email: true
       }
     });
     console.log("🚀 ~ DigestService ~ onModuleInit ~ userIds:", userIds)
@@ -110,17 +114,29 @@ export class DigestService implements OnModuleInit {
         tools: [this.queryTool()],
         systemPrompt: '你是一个单词记忆助手，根据用户信息和单词记录，生成单词记忆报告',
       })
-      // const result = await agent.invoke({
-      //   messages: [{ role: 'user', content: `查询用户信息,并且根据用户id关联单词记录表，查询出用户今天的单词记录,用户id: ${user.id}，过滤掉敏感信息` }]
-      // })
-      // const content = result.messages.at(-1)?.content
-      // if (content) {
-      //   const html = await marked.parse(content as string)
-      //   console.log("🚀 ~ DigestService ~ onModuleInit ~ html:", html)
-      // }
-      await this.digestQueue.add(digestQueueName.task.emailDigest, {
-        userId: '12312',
+      const result = await agent.invoke({
+        messages: [{ role: 'user', content: `查询用户信息,并且根据用户id关联单词记录表，查询出用户今天的单词记录,用户id: ${user.id}，过滤掉敏感信息` }]
       })
+      const content = result.messages.at(-1)?.content
+      if (content) {
+        const html = await marked.parse(content as string)
+        // console.log("🚀 ~ DigestService ~ onModuleInit ~ html:", html)
+        const [hour, minute, second] = user.timingTaskTime.split(':').map(Number)// '00:00:00' ==> [0, 0, 0]
+
+        const target = dayjs().startOf('day').add(hour, 'hour').add(minute, 'minute').add(second, 'second')
+        let delay = target.diff(dayjs())
+        console.log("🚀 ~ DigestService ~ handleEmailDigest ~ delay:", delay)
+        if (delay < 0) {
+          delay = 0
+        }
+        this.digestQueue.add(digestQueueName.task.emailDigest, {
+          userId: user.id,
+          text: html,
+          email: user.email
+        }, {
+          delay,//延迟多久执行 单位毫秒
+        })
+      }
     }
   }
 }

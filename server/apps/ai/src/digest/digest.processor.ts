@@ -12,10 +12,10 @@ export class DigestProcessor extends WorkerHost {
   }
   async process(job: Job) {
     if (job.name === digestQueueName.task.emailDigest) {
-      const { userId } = job.data
-      // const { text, email } = job.data
-      // await this.emailService.sendEmail(email, '每日单词记忆报告', text)
-      console.log('消费成功', userId)
+      // const { userId } = job.data
+      const { text, email } = job.data//digestQueue.add 传入的参数有关
+      await this.emailService.sendEmail(email, '每日单词记忆报告', text)
+      console.log('邮件发送成功')
     }
     if (job.name === digestQueueName.task.everyDayDigest) {
       this.digestService.handleEmailDigest()
