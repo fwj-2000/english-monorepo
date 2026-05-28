@@ -201,12 +201,12 @@ model PerformanceEntry {
   createdAt DateTime @default(now()) // 创建时间
   updatedAt DateTime @updatedAt // 更新时间
 
-  // @@index([fp, createdAt])
-  // @@index([fcp, createdAt])
-  // @@index([lcp, createdAt])
-  // @@index([inp, createdAt])
-  // @@index([cls, createdAt])
-  // @@index([fp, fcp, lcp, inp, cls, createdAt])
+  @@index([fp, createdAt])
+  @@index([fcp, createdAt])
+  @@index([lcp, createdAt])
+  @@index([inp, createdAt])
+  @@index([cls, createdAt])
+  @@index([fp, fcp, lcp, inp, cls, createdAt])
 }
 
 model ErrorEntry {
@@ -220,6 +220,6 @@ model ErrorEntry {
   createdAt DateTime @default(now()) // 创建时间
   updatedAt DateTime @updatedAt // 更新时间
 
-  // @@index([visitorId, createdAt])
-  // @@index([error, createdAt])
+  @@index([visitorId, createdAt])
+  @@index([error, createdAt])
 }
