@@ -41,7 +41,7 @@
   })
   const emits = defineEmits(['changeType'])
   const scene = new THREE.Scene() //创建场景
-  const clock = new THREE.Clock() //创建时钟
+  const clock = new THREE.Timer() //创建时钟
   let currentModel: THREE.Group | null = null //记录当前的模型
   let mixer: THREE.AnimationMixer | null = null //记录当前的动画混合器
   const loadModel = (url: LoginType) => {
