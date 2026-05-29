@@ -3055,8 +3055,12 @@ $.VERSION = Zn, $.BROWSER = Yr([
 //#endregion
 //#region src/report/index.ts
 var pi = async (e, t) => {
-	let n = new Blob([JSON.stringify(t)], { type: "application/json" });
-	navigator.sendBeacon(e, n);
+	fetch(e, {
+		method: "POST",
+		body: JSON.stringify(t),
+		keepalive: !0,
+		headers: { "Content-Type": "application/json" }
+	}).catch(() => {});
 }, mi = async (e, t) => (await fetch(e, {
 	method: "POST",
 	body: JSON.stringify(t),
