@@ -1,89 +1,160 @@
 <template>
-  <div class="flex-1 h-[750px] p-5 bg-purple-50 flex flex-col">
-    <div class="flex-1 overflow-y-auto">
-      <div v-for="(item, index) in list" :key="index">
-        <div
-          class="flex justify-end items-center gap-4 mt-5 mb-5 mr-5"
-          v-if="item.role === 'human'"
-        >
-          <div class="text-sm text-white max-w-[80%] rounded-lg p-2 bg-blue-500 shadow-md">
-            {{ item.content }}
-          </div>
-          <div>
-            <el-avatar :size="35">user</el-avatar>
-          </div>
+  <div class="flex-1 flex flex-col min-h-0 bg-surface">
+    <!-- 消息列表 -->
+    <div class="flex-1 overflow-y-auto px-6 py-4" ref="scrollContainer">
+      <!-- 空状态 -->
+      <div
+        v-if="!list?.length"
+        class="flex flex-col items-center justify-center h-full text-center"
+      >
+        <div class="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mb-4">
+          <el-icon :size="32" color="var(--color-primary-500)"><ChatDotRound /></el-icon>
         </div>
-        <div class="flex justify-start items-center gap-4 mt-5 mb-5" v-else>
-          <div><el-avatar :size="35">AI</el-avatar></div>
-          <div>
+        <h3 class="text-base font-semibold text-text-primary mb-1">开始你的英语学习之旅</h3>
+        <p class="text-sm text-text-tertiary max-w-xs">
+          选择左侧对话模式，然后用英语或中文与 AI 交流
+        </p>
+      </div>
+
+      <!-- 消息 -->
+      <template v-else>
+        <div v-for="(item, index) in list" :key="index" class="mb-6">
+          <!-- 用户消息 -->
+          <div v-if="item.role === 'human'" class="flex justify-end gap-3">
             <div
-              v-if="item.role === 'ai' && item.reasoning"
-              class="text-[12px] text-gray-500 max-w-[80%] p-2"
+              class="max-w-[75%] bg-primary-600 text-white rounded-2xl rounded-br-md px-4 py-2.5 text-sm leading-relaxed shadow-sm"
             >
-              {{ item.reasoning }}
+              {{ item.content }}
             </div>
             <div
-              v-if="item.role === 'ai' && item.content !== ''"
-              class="text-sm text-gray-700 max-w-[80%] bg-white rounded-lg mt-2 deepseek-markdown"
-              v-html="parseMarkdown(item.content)"
-            />
+              class="w-9 h-9 rounded-full bg-primary-100 flex items-center justify-center shrink-0"
+            >
+              <el-icon :size="18" color="var(--color-primary-600)"><User /></el-icon>
+            </div>
+          </div>
+
+          <!-- AI 消息 -->
+          <div v-else class="flex gap-3">
+            <div
+              class="w-9 h-9 rounded-full bg-primary-600 flex items-center justify-center shrink-0"
+            >
+              <el-icon :size="18" color="white"><Cpu /></el-icon>
+            </div>
+            <div class="max-w-[75%] min-w-0">
+              <!-- 深度思考折叠区 -->
+              <details v-if="item.reasoning" class="mb-2 group" :open="false">
+                <summary
+                  class="flex items-center gap-1.5 text-xs text-text-tertiary cursor-pointer hover:text-text-secondary transition-colors select-none"
+                >
+                  <el-icon :size="14"><DataBoard /></el-icon>
+                  <span>深度思考</span>
+                  <el-icon :size="12" class="transition-transform group-open:rotate-90"
+                    ><ArrowRight
+                  /></el-icon>
+                </summary>
+                <div
+                  class="mt-2 px-3 py-2 bg-primary-50/50 rounded-lg text-xs text-text-secondary leading-relaxed border border-primary-100/50 whitespace-pre-wrap"
+                >
+                  {{ item.reasoning }}
+                </div>
+              </details>
+
+              <!-- AI 回复 -->
+              <div
+                v-if="item.content !== ''"
+                class="bg-white rounded-2xl rounded-bl-md px-4 py-2.5 text-sm text-text-primary leading-relaxed shadow-sm border border-border deepseek-markdown"
+                v-html="parseMarkdown(item.content)"
+              />
+
+              <!-- 流式生成中的省略号 -->
+              <div
+                v-if="item.role === 'ai' && item.content === '' && !item.reasoning"
+                class="bg-white rounded-2xl rounded-bl-md px-4 py-3 text-sm text-text-tertiary shadow-sm border border-border inline-flex items-center gap-1"
+              >
+                <span
+                  class="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce"
+                  style="animation-delay: 0ms"
+                ></span>
+                <span
+                  class="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce"
+                  style="animation-delay: 150ms"
+                ></span>
+                <span
+                  class="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce"
+                  style="animation-delay: 300ms"
+                ></span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
       <div ref="chatRef"></div>
     </div>
-    <div class="flex p-5 border-t border-gray-200 box-border flex-col gap-3">
-      <!-- 功能选项 -->
-      <div class="flex items-center gap-3">
-        <div
-          class="flex items-center gap-1 px-3 py-1 rounded-full text-xs cursor-pointer transition-all border"
-          :class="
-            deepThink
-              ? 'bg-purple-100 border-purple-400 text-purple-700'
-              : 'bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200'
-          "
+
+    <!-- 输入区 -->
+    <div class="border-t border-border bg-white px-5 py-4">
+      <!-- 功能开关 -->
+      <div class="flex items-center gap-2 mb-3">
+        <button
           @click="deepThink = !deepThink"
+          :class="[
+            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer border',
+            deepThink
+              ? 'bg-primary-50 border-primary-200 text-primary-700'
+              : 'bg-white border-border text-text-tertiary hover:bg-surface',
+          ]"
         >
-          <span>🧠</span>
-          <span>深度思考</span>
-        </div>
-        <div
-          class="flex items-center gap-1 px-3 py-1 rounded-full text-xs cursor-pointer transition-all border"
-          :class="
-            webSearch
-              ? 'bg-blue-100 border-blue-400 text-blue-700'
-              : 'bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200'
-          "
+          <el-icon :size="14"><DataBoard /></el-icon>
+          深度思考
+        </button>
+        <button
           @click="webSearch = !webSearch"
+          :class="[
+            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer border',
+            webSearch
+              ? 'bg-primary-50 border-primary-200 text-primary-700'
+              : 'bg-white border-border text-text-tertiary hover:bg-surface',
+          ]"
         >
-          <span>🌐</span>
-          <span>联网搜索</span>
-        </div>
+          <el-icon :size="14"><Connection /></el-icon>
+          联网搜索
+        </button>
       </div>
-      <!-- 输入框 -->
-      <div class="flex">
+
+      <!-- 输入框 + 按钮 -->
+      <div class="flex items-end gap-2">
         <el-input
           @keyup.enter="sendMessage"
           type="textarea"
           :rows="2"
           v-model="message"
-          placeholder="请输入内容"
+          placeholder="用英语或中文开始对话..."
+          class="flex-1"
         />
-        <el-button class="ml-2" :icon="Position" type="primary" @click="sendMessage"></el-button>
-        <el-button
+        <button
+          @click="sendMessage"
+          :disabled="!message.trim()"
+          class="btn-primary w-10 h-10 p-0! rounded-xl! shrink-0"
+          aria-label="发送消息"
+        >
+          <el-icon :size="18"><Promotion /></el-icon>
+        </button>
+        <button
           v-if="!isRecording"
-          class="ml-2"
-          :icon="Mic"
-          type="primary"
           @click="startRecording"
-        ></el-button>
-        <el-button
+          class="btn-ghost w-10 h-10 p-0! rounded-xl! shrink-0 border border-border"
+          aria-label="语音输入"
+        >
+          <el-icon :size="18"><Microphone /></el-icon>
+        </button>
+        <button
           v-else
-          class="ml-2"
-          :icon="VideoPause"
-          type="primary"
           @click="stopRecording"
-        ></el-button>
+          class="btn-danger w-10 h-10 p-0! rounded-xl! shrink-0 border border-red-200"
+          aria-label="停止录音"
+        >
+          <el-icon :size="18"><VideoPause /></el-icon>
+        </button>
       </div>
     </div>
   </div>
@@ -91,47 +162,58 @@
 
 <script setup lang="ts">
   import { ref, useTemplateRef, watch, nextTick } from 'vue'
-  import { Position, Mic, VideoPause } from '@element-plus/icons-vue'
+  import {
+    Promotion,
+    Microphone,
+    VideoPause,
+    ChatDotRound,
+    User,
+    Cpu,
+    DataBoard,
+    Connection,
+    ArrowRight,
+  } from '@element-plus/icons-vue'
   import type { ChatMessageList } from '@en/common/chat'
   import { marked } from 'marked'
   import '@/assets/css/deep-seek.css'
   import { useVoiceToText } from '@/hooks/useVoiceToText'
+
   const { isRecording, start, stop } = useVoiceToText({
     lang: 'zh-CN',
     continuous: true,
   })
-  const deepThink = ref(false) //深度思考
-  const webSearch = ref(false) //联网搜索
+
+  const deepThink = ref(false)
+  const webSearch = ref(false)
   const emits = defineEmits(['onSendMessage'])
-  const chatRef = useTemplateRef<HTMLDivElement>('chatRef') //读取DOM元素
+  const chatRef = useTemplateRef<HTMLDivElement>('chatRef')
   const props = defineProps<{
-    list?: ChatMessageList //消息列表 后续通过props传入
+    list?: ChatMessageList
   }>()
-  const message = ref<string>('') //发送的内容
-  //发送消息
+  const message = ref<string>('')
+
   const sendMessage = () => {
-    if (!message.value) return
+    if (!message.value.trim()) return
     emits('onSendMessage', message.value, deepThink.value, webSearch.value)
     message.value = ''
   }
-  //markdown解析HTML
+
   const parseMarkdown = (content: string) => {
     if (!content) return ''
     return marked.parse(content)
   }
-  //开始录音
+
   const startRecording = () => {
     start(result => {
-      console.log("🚀 ~ startRecording ~ result:", result)
       message.value = result
     })
   }
-  //停止录音
+
   const stopRecording = () => {
     stop()
     sendMessage()
   }
-  //监听消息列表，滚动到最底部
+
   watch(
     () => props.list,
     () => {
@@ -139,9 +221,6 @@
         chatRef.value?.scrollIntoView({ behavior: 'smooth' })
       })
     },
-    {
-      immediate: true,
-      deep: true,
-    }
+    { immediate: true, deep: true }
   )
 </script>

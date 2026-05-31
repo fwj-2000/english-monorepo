@@ -1,47 +1,66 @@
 <template>
   <header
-    class="flex items-center h-20 border-b border-gray-200 justify-center sticky top-0 bg-white z-10"
+    class="flex items-center h-16 border-b border-border justify-center sticky top-0 bg-white/95 backdrop-blur z-header"
   >
-    <div class="w-[1200px] mx-auto flex items-center justify-between">
-      <div
-        class="text-2xl font-bold bg-indigo-700 text-white rounded-[10px] px-2 py-1 w-10 flex items-center justify-center h-10"
-      >
-        E
-      </div>
-      <div class="text-2xl font-bold">English App</div>
-      <template v-for="route in routes" :key="route.path">
+    <div class="page-container flex items-center justify-between">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
         <div
-          @click="gotoPath(route.path)"
-          :class="isActive(route.path)"
-          class="flex items-center gap-2 cursor-pointer rounded-[10px] px-2 py-1"
+          class="w-9 h-9 bg-primary-600 text-white rounded-lg flex items-center justify-center text-lg font-bold"
         >
-          <el-icon>
-            <component :is="route.icon" />
-          </el-icon>
-          <span>{{ route.name }}</span>
+          E
         </div>
-      </template>
-      <div class="flex items-center gap-2 bg-blue-200 text-blue-700 rounded-full px-2 py-1">
-        <el-icon>
-          <Sunny />
-        </el-icon>
-        <span class="font-bold text-sm">{{ userStore.getUser?.wordNumber ?? 0 }}</span>
+        <span class="text-lg font-semibold text-text-primary">English App</span>
       </div>
-      <div class="flex items-center gap-2 bg-amber-200 text-amber-700 rounded-full px-2 py-1">
-        <el-icon>
-          <Star />
-        </el-icon>
-        <span class="font-bold text-sm">{{ userStore.getUser?.dayNumber ?? 0 }}</span>
-      </div>
-      <el-popover :width="340">
-        <template #reference>
-          <div class="flex items-center gap-2 border-l cursor-pointer border-gray-200 pl-4">
-            <img class="w-10 h-10 rounded-full ml-2 mr-2" :src="avatar" />
-            <span class="text-sm font-bold">{{ userStore.getUser?.name ?? '游客' }}</span>
-          </div>
+
+      <!-- 导航 -->
+      <nav class="flex items-center gap-1">
+        <template v-for="route in routes" :key="route.path">
+          <button
+            @click="gotoPath(route.path)"
+            :class="[
+              'inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg font-medium transition-colors duration-150',
+              isActive(route.path),
+            ]"
+          >
+            <el-icon :size="18">
+              <component :is="route.icon" />
+            </el-icon>
+            <span>{{ route.name }}</span>
+          </button>
         </template>
-        <Profile />
-      </el-popover>
+      </nav>
+
+      <!-- 右侧：统计 + 用户 -->
+      <div class="flex items-center gap-3">
+        <!-- 单词数 -->
+        <div
+          class="flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 text-primary-700 rounded-full text-sm font-medium"
+        >
+          <el-icon :size="16"><Sunny /></el-icon>
+          <span>{{ userStore.getUser?.wordNumber ?? 0 }}</span>
+        </div>
+        <!-- 打卡天数 -->
+        <div
+          class="flex items-center gap-1.5 px-3 py-1.5 bg-accent-50 text-accent-500 rounded-full text-sm font-medium"
+        >
+          <el-icon :size="16"><Star /></el-icon>
+          <span>{{ userStore.getUser?.dayNumber ?? 0 }}</span>
+        </div>
+
+        <!-- 用户头像 + 弹窗 -->
+        <el-popover :width="340" trigger="click">
+          <template #reference>
+            <div class="flex items-center gap-2 pl-3 border-l border-border cursor-pointer">
+              <img class="w-9 h-9 rounded-full" :src="avatar" />
+              <span class="text-sm font-medium text-text-secondary">{{
+                userStore.getUser?.name ?? '游客'
+              }}</span>
+            </div>
+          </template>
+          <Profile />
+        </el-popover>
+      </div>
     </div>
   </header>
 </template>
@@ -76,8 +95,8 @@
   ]
   const isActive = (path: string) => {
     return currentPath.value === path
-      ? 'bg-blue-200 text-blue-700'
-      : 'text-gray-500 hover:bg-blue-200 hover:text-blue-700'
+      ? 'bg-primary-50 text-primary-700 font-semibold'
+      : 'text-text-secondary hover:bg-primary-50 hover:text-primary-700'
   }
   watch(
     () => router.currentRoute.value,

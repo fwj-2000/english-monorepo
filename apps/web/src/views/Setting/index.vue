@@ -1,11 +1,10 @@
 <template>
-  <div class="mx-auto w-[1200px] px-4 py-6">
-    <div class="flex items-center justify-between">
+  <div class="page-container py-8">
+    <div class="flex items-center justify-between mb-6">
       <div>
-        <div class="text-xl font-extrabold text-slate-900">设置</div>
-        <div class="mt-1 text-sm text-slate-500">在这里修改你的个人信息与头像</div>
+        <h1 class="text-2xl font-bold text-text-primary">设置</h1>
+        <p class="mt-1 text-sm text-text-tertiary">在这里修改你的个人信息与头像</p>
       </div>
-
       <div class="flex gap-2">
         <el-button @click="init">重置</el-button>
         <el-button @click="onSave" type="primary">保存</el-button>
@@ -36,7 +35,7 @@
                 <el-button type="primary">选择头像</el-button>
               </el-upload>
 
-              <div class="text-xs text-slate-500">支持 png/jpg/webp，建议小于 2MB</div>
+              <div class="text-xs text-text-tertiary">支持 png/jpg/webp，建议小于 2MB</div>
             </div>
           </div>
         </el-card>
@@ -46,7 +45,7 @@
             <div class="font-bold">账号</div>
           </template>
 
-          <div class="text-sm text-slate-600">
+          <div class="text-sm text-text-secondary">
             <div class="flex items-center justify-between">
               <span>登录状态</span>
               <el-tag type="success"> 已登录 </el-tag>
@@ -81,7 +80,7 @@
                   v-model="form.timingTaskTime"
                   placeholder="请选择定时任务时间"
                 />
-                <div class="text-xs text-slate-500 mt-3">
+                <div class="text-xs text-text-tertiary mt-3">
                   tips:只有填写邮箱并且开启定时任务，才能收到每日打卡提醒
                 </div>
               </div>
@@ -111,8 +110,8 @@
 
           <div class="flex items-center justify-between">
             <div>
-              <div class="font-bold text-slate-900">退出登录</div>
-              <div class="text-sm text-slate-500">清除本地登录状态</div>
+              <div class="font-bold text-text-primary">退出登录</div>
+              <div class="text-sm text-text-tertiary">清除本地登录状态</div>
             </div>
             <el-button @click="logoutHandle" type="danger" plain> 退出 </el-button>
           </div>

@@ -1,21 +1,28 @@
 <template>
-  <div v-if="isShowLogin" class="fixed inset-0 bg-black opacity-30 filter blur-sm z-40"></div>
+  <div v-if="isShowLogin" class="fixed inset-0 bg-black/40 z-overlay"></div>
   <Transition name="fade">
-    <div v-if="isShowLogin" class="fixed inset-30 flex items-center justify-center z-50">
-      <div class="w-300 h-175 bg-white rounded-[20px] shadow-2xl overflow-hidden flex">
-        <!-- 左侧 3D 模型区域 -->
-        <ModelViewer @changeType="changeType" ref="modelViewerRef" />
+    <div v-if="isShowLogin" class="fixed inset-0 flex items-center justify-center z-50">
+      <div class="w-[440px] bg-white rounded-2xl shadow-lg overflow-hidden">
+        <!-- 登录/注册切换 -->
+        <div class="flex border-b border-border">
+          <button
+            @click="loginType = 'login'"
+            :class="loginType === 'login' ? 'flex-1 py-4 text-center text-sm font-semibold text-primary-600 border-b-2 border-primary-600 bg-primary-50/50' : 'flex-1 py-4 text-center text-sm text-text-secondary hover:text-text-primary hover:bg-gray-50 transition-colors duration-200'"
+          >
+            登录
+          </button>
+          <button
+            @click="loginType = 'register'"
+            :class="loginType === 'register' ? 'flex-1 py-4 text-center text-sm font-semibold text-primary-600 border-b-2 border-primary-600 bg-primary-50/50' : 'flex-1 py-4 text-center text-sm text-text-secondary hover:text-text-primary hover:bg-gray-50 transition-colors duration-200'"
+          >
+            注册
+          </button>
+        </div>
 
-        <!-- 右侧登录表单区域 -->
-        <div class="flex-1 flex flex-col justify-center px-12 py-10 bg-white">
+        <!-- 表单区域 -->
+        <div class="flex flex-col justify-center px-10 py-10">
           <LoginForm v-if="loginType === 'login'" />
           <RegisterForm v-if="loginType === 'register'" />
-          <!-- <div class="mt-6 text-center">
-            <div class="flex items-center justify-center gap-4 text-sm text-gray-500">
-              <span class="cursor-pointer hover:text-indigo-600 transition-colors">忘记密码？</span>
-              <span class="text-gray-300">|</span>
-            </div>
-          </div> -->
         </div>
       </div>
     </div>
@@ -23,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-  import ModelViewer from './ModelViewer.vue'
+  // import ModelViewer from './ModelViewer.vue'
   import LoginForm from './LoginForm.vue'
   import RegisterForm from './RegisterForm.vue'
   import { ref, inject } from 'vue'

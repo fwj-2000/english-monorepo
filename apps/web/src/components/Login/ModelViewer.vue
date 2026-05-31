@@ -1,19 +1,19 @@
 <template>
-  <div class="relative w-[800px] h-full bg-linear-to-br from-gray-800 to-gray-900">
+  <div class="relative w-[460px] h-full bg-primary-600">
     <canvas class="w-full h-full" ref="canvasRef"></canvas>
     <div class="absolute top-6 left-6">
       <div class="flex items-center gap-2">
         <div
-          class="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 rounded-[10px] flex items-center justify-center"
+          class="w-10 h-10 bg-white rounded-lg flex items-center justify-center"
         >
-          <span class="text-white font-bold text-xl">E</span>
+          <span class="text-primary-600 font-bold text-xl">E</span>
         </div>
-        <span class="text-white text-xl font-bold">English App</span>
+        <span class="text-white text-lg font-semibold">English App</span>
       </div>
     </div>
     <!-- 登录/注册切换按钮 -->
     <div class="absolute top-6 right-6">
-      <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg p-1">
+      <div class="flex items-center gap-1 bg-white/15 rounded-lg p-1">
         <button @click="loadModel('login')" :class="loginClass">登录</button>
         <button @click="loadModel('register')" :class="registerClass">注册</button>
       </div>
@@ -31,13 +31,13 @@
   const type = ref<LoginType>('login') // 登录/注册类型
   const loginClass = computed(() => {
     return type.value === 'login'
-      ? 'bg-indigo-500 text-white shadow-lg px-4 py-2 rounded-md text-sm font-medium transition-all'
-      : 'text-white/70 hover:text-white hover:bg-white/10 px-4 py-2 rounded-md text-sm font-medium transition-all'
+      ? 'bg-white text-primary-700 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200'
+      : 'text-white/70 hover:text-white hover:bg-white/10 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200'
   })
   const registerClass = computed(() => {
     return type.value === 'register'
-      ? 'bg-indigo-500 text-white shadow-lg px-4 py-2 rounded-md text-sm font-medium transition-all'
-      : 'text-white/70 hover:text-white hover:bg-white/10 px-4 py-2 rounded-md text-sm font-medium transition-all'
+      ? 'bg-white text-primary-700 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200'
+      : 'text-white/70 hover:text-white hover:bg-white/10 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200'
   })
   const emits = defineEmits(['changeType'])
   const scene = new THREE.Scene() //创建场景

@@ -32,8 +32,8 @@ serverApi.interceptors.response.use(res => {
         ElMessage.error('网络连接失败,请重试')
         return Promise.reject(error)
     }
-    if (error.response.status !== 401) {
-        //其他code码就直接抛出异常
+    if (!error.response || error.response.status !== 401) {
+        //其他code码就直接抛出异常（error.response为undefined说明请求未到达服务器）
         return Promise.reject(error)
     }
     //下面的逻辑就是处理401的情况了
