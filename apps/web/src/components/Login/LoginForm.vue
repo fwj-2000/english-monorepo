@@ -1,17 +1,17 @@
 <template>
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-800 mb-2">欢迎回来</h1>
-    <p class="text-gray-500 text-sm">请登录您的账户以继续</p>
+    <h1 class="section-title">登录 English App</h1>
+    <p class="section-desc">继续你的英语学习之旅</p>
   </div>
 
-  <el-form ref="formRef" :model="form" :rules="rules" class="space-y-6">
+  <el-form ref="formRef" :model="form" :rules="rules" class="space-y-5">
     <el-form-item prop="phone">
       <el-input
         :maxlength="11"
         v-model="form.phone"
         placeholder="请输入手机号"
         size="large"
-        class="h-12"
+        class="h-11"
         :prefix-icon="User"
       />
     </el-form-item>
@@ -22,7 +22,7 @@
         type="password"
         placeholder="请输入密码"
         size="large"
-        class="h-12"
+        class="h-11"
         :prefix-icon="Lock"
         show-password
       />
@@ -32,7 +32,7 @@
       <el-button
         type="primary"
         size="large"
-        class="w-full h-12 text-base font-semibold bg-linear-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-0"
+        class="w-full h-11 text-base font-semibold"
         @click="handleLogin"
       >
         登录
@@ -64,7 +64,10 @@
       { required: true, message: '请输入手机号', trigger: 'blur' },
       { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' },
     ],
-    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+    password: [
+      { required: true, message: '请输入密码', trigger: 'blur' },
+      { min: 8, message: '密码长度至少为8位', trigger: 'blur' },
+    ],
   }
 
   const handleLogin = async () => {

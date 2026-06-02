@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-[60vh] bg-zinc-50/80">
-    <div class="w-[1200px] mx-auto px-4 pt-12 pb-24">
+  <div class="min-h-[60vh] bg-surface">
+    <div class="page-container pt-12 pb-24">
       <header class="mb-10 text-center">
-        <h1 class="text-3xl font-bold text-zinc-900 tracking-tight sm:text-4xl">{{ title }}</h1>
-        <p class="mt-3 text-zinc-500 text-sm">请根据释义和翻译拼写单词</p>
+        <h1 class="text-3xl font-bold text-text-primary tracking-tight sm:text-4xl">{{ title }}</h1>
+        <p class="mt-3 text-text-secondary text-sm">请根据释义和翻译拼写单词</p>
       </header>
 
       <el-skeleton v-if="isLoading" :rows="10" animated />
@@ -14,36 +14,36 @@
 
       <template v-else>
         <!-- 本组已学完 -->
-        <div
-          v-if="currentIndex >= list.length"
-          class="text-center py-16 px-6 bg-white rounded-2xl border border-zinc-100 shadow-sm"
-        >
-          <p class="text-zinc-600 mb-6">本组 10 个词已学完</p>
+        <div v-if="currentIndex >= list.length" class="text-center py-16 px-6 card">
+          <p class="text-text-secondary mb-6">本组 10 个词已学完</p>
           <el-button type="primary" size="large" @click="saveWordMaster"> 再练一组 </el-button>
         </div>
 
         <!-- 当前单词卡片 -->
         <div v-else>
-          <div class="mb-4 flex items-center justify-between text-sm text-zinc-500">
+          <div class="mb-4 flex items-center justify-between text-sm text-text-tertiary">
             <span>第 {{ currentIndex + 1 }} / {{ list.length }} 个</span>
           </div>
-          <article class="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden">
+          <article class="card overflow-hidden">
             <div class="p-8 sm:p-10 relative">
               <div class="flex justify-center mb-6">
                 <div
                   :class="{ 'filter blur-md select-none': isWordBlurred }"
                   class="transition-all duration-300 min-h-10 flex flex-col items-center text-center"
                 >
-                  <div class="text-2xl sm:text-3xl font-bold text-indigo-600 tracking-tight">
+                  <div class="text-2xl sm:text-3xl font-bold text-primary-600 tracking-tight">
                     {{ currentWord?.word }}
                   </div>
                   <div class="flex items-center justify-center gap-2 mt-1">
-                    <span v-if="currentWord?.phonetic" class="text-base text-zinc-500 font-mono">
+                    <span
+                      v-if="currentWord?.phonetic"
+                      class="text-base text-text-tertiary font-mono"
+                    >
                       {{ currentWord.phonetic }}
                     </span>
                     <el-icon
                       v-if="currentWord?.word"
-                      class="shrink-0 cursor-pointer text-slate-400 hover:text-indigo-400 transition-colors"
+                      class="shrink-0 cursor-pointer text-text-tertiary hover:text-primary-500 transition-colors"
                       :size="18"
                       title="发音"
                       @click="playAudio(currentWord!.word)"
@@ -53,7 +53,7 @@
                   </div>
                 </div>
                 <el-icon
-                  class="absolute! right-10 top-10 cursor-pointer text-slate-400 hover:text-indigo-400 transition-colors"
+                  class="absolute! right-10 top-10 cursor-pointer text-text-tertiary hover:text-primary-500 transition-colors"
                   :size="18"
                   :title="isWordBlurred ? '点击显示单词' : '点击隐藏单词'"
                   @click="isWordBlurred = !isWordBlurred"
@@ -63,24 +63,24 @@
                 </el-icon>
               </div>
               <!-- 释义 -->
-              <div class="mb-4 rounded-lg bg-zinc-50/80 border border-zinc-100 p-4">
-                <p class="text-xs font-medium text-zinc-400 uppercase tracking-wide mb-2">释义</p>
+              <div class="mb-4 rounded-lg bg-surface border border-border p-4">
+                <p class="text-xs font-medium text-text-tertiary mb-2">释义</p>
                 <div
-                  class="text-zinc-700 leading-relaxed prose prose-sm max-w-none"
+                  class="text-text-primary leading-relaxed prose prose-sm max-w-none"
                   v-html="currentWord?.definition"
                 />
               </div>
               <!-- 翻译 -->
-              <div class="rounded-lg bg-zinc-50/80 border border-zinc-100 p-4">
-                <p class="text-xs font-medium text-zinc-400 uppercase tracking-wide mb-2">翻译</p>
+              <div class="rounded-lg bg-surface border border-border p-4">
+                <p class="text-xs font-medium text-text-tertiary mb-2">翻译</p>
                 <div
-                  class="text-zinc-600 leading-relaxed whitespace-pre-line prose prose-sm max-w-none"
+                  class="text-text-primary leading-relaxed whitespace-pre-line prose prose-sm max-w-none"
                   v-html="currentWord?.translation"
                 />
               </div>
               <!--拼写练习-->
-              <div class="rounded-lg bg-zinc-50/80 border border-zinc-100 p-4">
-                <p class="text-xs font-medium text-zinc-400 uppercase tracking-wide mb-2">拼写</p>
+              <div class="rounded-lg bg-surface border border-border p-4">
+                <p class="text-xs font-medium text-text-tertiary mb-2">拼写</p>
                 <div class="flex items-center gap-2 justify-center">
                   <input
                     :maxlength="1"
@@ -92,17 +92,23 @@
                     type="text"
                     v-model="item.input"
                     :class="{
-                      'border-indigo-500!': item.isTrue === true,
+                      'border-primary-500!': item.isTrue === true,
                       'border-red-500!': item.isTrue === false,
                     }"
-                    class="border-0 border-b-2 border-zinc-300 focus:border-indigo-500 bg-transparent outline-none w-10 text-center text-2xl font-bold"
+                    class="border-0 border-b-2 border-border focus:border-primary-500 bg-transparent outline-none w-10 text-center text-2xl font-bold"
                   />
                 </div>
               </div>
-              <!--控制按钮-->
-              <div class="flex justify-end gap-2">
-                <el-button type="primary" @click="pagePrev"> 上一个 </el-button>
-                <el-button type="primary" @click="pageNext"> 下一个 </el-button>
+              <div class="flex justify-end gap-2 mt-6">
+                <button
+                  @click="pagePrev"
+                  class="btn-ghost border border-border px-4 py-2 text-sm rounded-xl cursor-pointer"
+                >
+                  上一个
+                </button>
+                <button @click="pageNext" class="btn-primary px-4 py-2 text-sm cursor-pointer">
+                  下一个
+                </button>
               </div>
             </div>
           </article>

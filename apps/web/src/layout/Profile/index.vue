@@ -1,52 +1,46 @@
 <template>
-  <section
-    class="w-80 overflow-hidden rounded-[14px] bg-linear-to-b from-white/95 to-slate-50/95 backdrop-blur"
-    aria-label="用户资料卡"
-  >
-    <div class="flex items-center gap-3 px-4 pb-3 pt-3.5">
-      <div class="grid size-11 shrink-0 place-items-center rounded-full border border-gray-200">
-        <img class="size-10 rounded-full object-cover" :src="avatar" loading="lazy" />
-      </div>
-
+  <section class="w-80 rounded-2xl bg-white overflow-hidden" aria-label="用户资料卡">
+    <!-- 头像 + 信息 -->
+    <div class="flex items-center gap-3 px-4 pt-4 pb-3">
+      <img
+        class="w-11 h-11 rounded-full border border-border object-cover shrink-0"
+        :src="avatar"
+        loading="lazy"
+      />
       <div class="min-w-0 flex-1">
-        <div class="flex min-w-0 items-center gap-2">
-          <div class="flex flex-col gap-1">
-            <div
-              class="truncate text-sm font-extrabold leading-5 text-slate-900"
-              :title="displayName"
-            >
-              {{ displayName }}
-            </div>
-            <div v-if="bio" class="truncate text-xs leading-4 text-slate-500/90" :title="bio">
-              {{ bio }}
-            </div>
-          </div>
+        <div class="text-sm font-semibold text-text-primary truncate" :title="displayName">
+          {{ displayName }}
         </div>
-        <div v-if="!isLoggedIn" class="mt-1 text-xs leading-4 text-slate-500/90">
+        <div v-if="bio" class="text-xs text-text-tertiary truncate mt-0.5" :title="bio">
+          {{ bio }}
+        </div>
+        <div v-if="!isLoggedIn" class="text-xs text-text-tertiary mt-1">
           登录后可同步词库进度与打卡数据
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-2.5 px-4 pb-3 pt-2" v-if="isLoggedIn">
-      <div class="rounded-xl border border-slate-900/5 bg-white/65 px-2.5 py-2.5">
-        <div class="text-xs leading-4 text-slate-500/95">单词数量</div>
-        <div class="mt-1 text-lg font-black leading-[22px] text-slate-900">
+    <!-- 统计数据 -->
+    <div v-if="isLoggedIn" class="grid grid-cols-2 gap-2 px-4 pb-3">
+      <div class="rounded-xl border border-border bg-surface px-3 py-2.5">
+        <div class="text-xs text-text-tertiary">单词数量</div>
+        <div class="mt-1 text-lg font-bold text-text-primary">
           {{ userStore?.getUser?.wordNumber ?? 0 }}
         </div>
       </div>
-      <div class="rounded-xl border border-amber-500/20 bg-amber-50/90 px-2.5 py-2.5">
-        <div class="text-xs leading-4 text-slate-500/95">打卡天数</div>
-        <div class="mt-1 text-lg font-black leading-[22px] text-slate-900">
+      <div class="rounded-xl border border-accent-400/20 bg-accent-50 px-3 py-2.5">
+        <div class="text-xs text-text-tertiary">打卡天数</div>
+        <div class="mt-1 text-lg font-bold text-text-primary">
           {{ userStore?.getUser?.dayNumber ?? 0 }}
         </div>
       </div>
     </div>
 
-    <div class="flex gap-2.5 border-t border-slate-900/5 bg-white/75 px-4 pb-3.5 pt-3">
+    <!-- 操作按钮 -->
+    <div class="flex gap-2 border-t border-border px-4 py-3">
       <button
         v-if="!isLoggedIn"
-        class="h-9 flex-1 cursor-pointer rounded-[10px] border border-blue-600/25 bg-blue-600/10 text-[13px] font-extrabold text-blue-700 transition duration-150 hover:-translate-y-0.5 hover:shadow-[0_10px_16px_rgba(15,23,42,0.10)] active:translate-y-0 active:shadow-none motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:shadow-none"
+        class="btn-primary flex-1 h-10 text-sm cursor-pointer"
         type="button"
         @click="loginHandle"
       >
@@ -54,14 +48,14 @@
       </button>
       <template v-else>
         <button
-          class="h-9 flex-1 cursor-pointer rounded-[10px] border border-slate-900/10 bg-white/90 text-[13px] font-extrabold text-slate-900/90 transition duration-150 hover:-translate-y-0.5 hover:shadow-[0_10px_16px_rgba(15,23,42,0.10)] active:translate-y-0 active:shadow-none motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:shadow-none"
+          class="btn-ghost flex-1 h-10 text-sm border border-border cursor-pointer"
           type="button"
           @click="gotoPath('/setting/index')"
         >
           个人资料
         </button>
         <button
-          class="h-9 flex-1 cursor-pointer rounded-[10px] border border-red-500/20 bg-red-500/10 text-[13px] font-extrabold text-red-700 transition duration-150 hover:-translate-y-0.5 hover:shadow-[0_10px_16px_rgba(15,23,42,0.10)] active:translate-y-0 active:shadow-none motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:shadow-none"
+          class="btn-danger flex-1 h-10 text-sm border border-red-200 cursor-pointer"
           type="button"
           @click="logoutHandle"
         >

@@ -127,7 +127,7 @@ export class UserService {
     const port = this.minioService.getPort();// 获取端口
     const databaseUrl = `/${bucket}/${fileName}`;
     // databaseUrl  /avatar/xxxx.png
-    const previewUrl = `${baseUrl}://${this.minioService.getEndpoint()}:${port}/${databaseUrl}`;
+    const previewUrl = `${baseUrl}://${this.minioService.getEndpoint()}:${port}${databaseUrl}`;
     // previewUrl  http://192.168.1.100:9000/avatar/xxxx.png
     return this.response.success({ databaseUrl, previewUrl });
 

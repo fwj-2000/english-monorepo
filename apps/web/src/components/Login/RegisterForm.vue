@@ -1,7 +1,7 @@
 <template>
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-800 mb-2">欢迎注册</h1>
-    <p class="text-gray-500 text-sm">请填写以下信息以完成注册</p>
+    <h1 class="section-title">加入 English App</h1>
+    <p class="section-desc">开始你的英语学习之旅</p>
   </div>
   <el-form
     ref="formRef"
@@ -9,14 +9,14 @@
     :rules="rules"
     label-width="80"
     label-position="top"
-    class="space-y-6"
+    class="space-y-5"
   >
     <el-form-item prop="name">
       <el-input
         v-model="form.name"
         placeholder="请输入用户名"
         size="large"
-        class="h-12"
+        class="h-11"
         :prefix-icon="User"
       />
     </el-form-item>
@@ -26,16 +26,16 @@
         v-model="form.phone"
         placeholder="请输入手机号"
         size="large"
-        class="h-12"
+        class="h-11"
         :prefix-icon="User"
       />
     </el-form-item>
     <el-form-item prop="email">
       <el-input
         v-model="form.email"
-        placeholder="请输入邮箱(可选)"
+        placeholder="请输入邮箱 (选填)"
         size="large"
-        class="h-12"
+        class="h-11"
         :prefix-icon="User"
       />
     </el-form-item>
@@ -43,9 +43,9 @@
       <el-input
         v-model="form.password"
         type="password"
-        placeholder="请输入密码"
+        placeholder="请输入密码 (至少8位)"
         size="large"
-        class="h-12"
+        class="h-11"
         :prefix-icon="Lock"
         show-password
       />
@@ -54,7 +54,7 @@
       <el-button
         type="primary"
         size="large"
-        class="w-full h-12 text-base font-semibold bg-linear-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-0"
+        class="w-full h-11 text-base font-semibold"
         @click="handleRegister"
       >
         注册
@@ -94,7 +94,7 @@
     ],
     password: [
       { required: true, message: '请输入密码', trigger: 'blur' },
-      { min: 6, max: 16, message: '密码长度为6-16位', trigger: 'blur' },
+      { min: 8, max: 32, message: '密码长度为8-32位', trigger: 'blur' },
     ],
   }
 
