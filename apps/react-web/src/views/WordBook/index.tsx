@@ -40,7 +40,7 @@ export function WordBook() {
       </div>
       <div className="grid grid-cols-3 gap-3">
         {list.map(item => (
-          <div key={item.id} className="bg-white rounded-lg border p-4 hover:shadow-md">
+          <div key={item.id} className="card card-hover p-4 cursor-pointer">
             <div className="text-sm font-semibold text-blue-600 mb-1">{item.word}</div>
             <div className="text-sm text-gray-400 mb-1 flex items-center gap-2">{item.phonetic}<PlayCircleOutlined onClick={() => playAudio(item.word)} className="cursor-pointer" /></div>
             <div className="text-sm text-gray-600 mb-1 line-clamp-2">{item.definition}</div>
