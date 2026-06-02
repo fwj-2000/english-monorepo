@@ -16,7 +16,7 @@ export default defineConfig({
         changeOrigin: true,
       }
     },
-    port: Config.ports.web + 1,
+    port: Config.ports.reactWeb,
   },
   plugins: [
     react(),

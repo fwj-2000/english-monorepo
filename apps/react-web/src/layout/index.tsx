@@ -3,13 +3,13 @@ import { Outlet, useNavigate } from "react-router"
 import { Layout as AntLayout } from "antd"
 import AppHeader from "./Header"
 import AppContent from "./Content"
+import LoginDialog from "@/components/Login/LoginDialog"
 import { setNavigate } from "@/routers/navigate"
 import "./index.css"
 
 export default function Layout() {
   const navigate = useNavigate()
 
-  // 注入 navigate 供 API 层（axios 拦截器）等非组件代码调用
   useEffect(() => {
     setNavigate(navigate)
   }, [navigate])
@@ -22,6 +22,8 @@ export default function Layout() {
           <Outlet />
         </AppContent>
       </AntLayout>
+      {/* 全局登录弹窗 */}
+      <LoginDialog />
     </AntLayout>
   )
 }

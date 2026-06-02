@@ -1,0 +1,173 @@
+<template>
+  <Teleport to="body">
+    <Transition name="pay-fade">
+      <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- 遮罩 -->
+        <div class="absolute inset-0 bg-text-primary/50 backdrop-blur-sm" aria-hidden="true" />
+
+        <!-- 弹框 -->
+        <div
+          class="relative w-full max-w-md rounded-2xl bg-white shadow-xl border border-border overflow-hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pay-dialog-title"
+        >
+          <!-- 标题 -->
+          <div class="px-6 pt-6 pb-4 border-b border-border">
+            <h2 id="pay-dialog-title" class="text-lg font-semibold text-text-primary">确认支付</h2>
+            <p class="mt-1 text-sm text-text-secondary">请核对课程信息后完成支付</p>
+          </div>
+          <!-- 课程信息（有 course 时展示） -->
+          <div v-if="course" class="p-6 space-y-4">
+            <div class="flex gap-4 rounded-xl bg-surface p-4">
+              <div class="w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-border">
+                <img
+                  :src="imageSrc(course.url)"
+                  :alt="course.name"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div class="min-w-0 flex-1">
+                <h3 class="text-sm font-medium text-text-primary line-clamp-2">
+                  {{ course.name }}
+                </h3>
+                <p class="mt-1 text-xs text-text-tertiary">讲师 {{ course.teacher }}</p>
+              </div>
+            </div>
+            <div
+              class="flex items-center justify-between rounded-xl border border-border bg-primary-50 px-4 py-3"
+            >
+              <span class="text-sm text-text-secondary">支付金额</span>
+              <span class="text-xl font-bold text-primary-600">¥{{ course.price }}</span>
+            </div>
+            <!-- 支付剩余时间倒计时（创建订单后显示） -->
+            <div
+              v-if="timeExpire > 0"
+              class="flex flex-col items-center rounded-xl border border-accent-400/20 bg-accent-50 px-4 py-3"
+            >
+              <el-countdown
+                title="支付剩余时间"
+                format="HH:mm:ss"
+                :value="timeExpire"
+                @finish="tips"
+              />
+            </div>
+          </div>
+
+          <!-- 无数据时的占位 -->
+          <div v-else class="p-6 text-center text-sm text-text-tertiary">暂无课程信息</div>
+
+          <!-- 底部按钮 -->
+          <div class="flex gap-3 px-6 pb-6 pt-2">
+            <button
+              type="button"
+              class="flex-1 py-2.5 rounded-xl text-sm font-medium text-text-secondary border border-border bg-white hover:bg-surface transition-colors cursor-pointer"
+              @click="close"
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              class="btn-primary flex-1 py-2.5 text-sm cursor-pointer"
+              :disabled="isPay"
+              @click="onConfirm"
+            >
+              {{ isPay ? '支付中...' : '确认支付' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
+
+<script setup lang="ts">
+  import { ref, onMounted, onUnmounted } from 'vue'
+  import type { Course } from '@en/common/course'
+  import { ElMessage } from 'element-plus'
+  import { uploadUrl } from '@/apis'
+  import type { CreatePayDto } from '@en/common/pay'
+  import { createPay } from '@/apis/pay'
+  import { useSocket } from '@/hooks/useSocket'
+  const { getSocket } = useSocket()
+  const modelValue = defineModel<boolean>('modelValue', { required: true })
+  const props = defineProps<{
+    course: Course | null
+  }>()
+  const isPay = ref(false) //是否支付中
+  const timeExpire = ref(0) //支付剩余时间
+
+  // 始终注册 socket 监听，避免因 watch 时机问题导致事件丢失
+  onMounted(() => {
+    const socket = getSocket()
+    if (!socket) {
+      console.warn('[Pay] socket 未连接，无法监听支付结果')
+      return
+    }
+    socket.on('paymentSuccess', () => {
+      console.log('🚀 ~ paymentSuccess')
+      // 只有弹框打开时才展示支付成功提示
+      if (modelValue.value) {
+        ElMessage.success({
+          message: '支付成功',
+          duration: 10000,
+        })
+        close()
+      }
+    })
+  })
+
+  onUnmounted(() => {
+    getSocket()?.off('paymentSuccess')
+  })
+
+  //图片地址
+  const imageSrc = (url: string) => {
+    return uploadUrl + url
+  }
+
+  //倒计时结束说明超时了，提示用户重新支付
+  const tips = () => {
+    ElMessage.error('支付超时，请重新支付')
+    timeExpire.value = 0
+    isPay.value = false
+  }
+
+  //关闭弹框
+  const close = () => {
+    modelValue.value = false //关闭弹框
+    timeExpire.value = 0 //重置倒计时
+    isPay.value = false //重置支付状态
+  }
+
+  //点击确认支付
+  const onConfirm = async () => {
+    const body: CreatePayDto = {
+      subject: props.course?.name || '',
+      body: props.course?.description || '',
+      total_amount: props.course?.price || '',
+      courseId: props.course?.id || '',
+    }
+    const res = await createPay(body)
+    if (res.code === 200) {
+      isPay.value = true //设置支付中
+      window.open(res.data.payUrl, '_blank') //打开支付页面
+      timeExpire.value = res.data.timeExpire //设置倒计时
+    } else {
+      ElMessage.error(res.message) //提示错误
+      isPay.value = false //重置支付状态
+    }
+  }
+</script>
+
+<style scoped>
+  .pay-fade-enter-active,
+  .pay-fade-leave-active {
+    transition: opacity 0.2s ease;
+  }
+
+  .pay-fade-enter-from,
+  .pay-fade-leave-to {
+    opacity: 0;
+  }
+</style>
