@@ -1,1 +1,1 @@
-export { Chat as default } from "@/views/Chat"
+export { Chat as default } from '@/views/Chat'

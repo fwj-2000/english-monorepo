@@ -8,7 +8,7 @@ export const sse = <T, V = any>(
   method: Method = 'POST',
   body: V,
   callback?: (data: T) => void,
-  errorCallback?: (error: Error) => void,
+  errorCallback?: (error: Error) => void
 ) => {
   fetchEventSource(url, {
     method: method.toLowerCase(),

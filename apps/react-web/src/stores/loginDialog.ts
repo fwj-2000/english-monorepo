@@ -10,7 +10,7 @@ interface LoginDialogState {
   hide: () => void
 }
 
-export const useLoginDialogStore = create<LoginDialogState>()((set) => ({
+export const useLoginDialogStore = create<LoginDialogState>()(set => ({
   visible: false,
   show: () => set({ visible: true }),
   hide: () => set({ visible: false }),

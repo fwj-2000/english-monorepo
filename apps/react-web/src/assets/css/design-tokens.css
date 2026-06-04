@@ -4,7 +4,7 @@
    参考: Duolingo × Notion × Linear
    ============================================ */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ── 颜色系统 ── */
 @theme {
@@ -50,14 +50,14 @@
 @layer base {
   body {
     @apply bg-surface text-text-primary antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-      'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+      'Microsoft YaHei', sans-serif;
   }
 }
 
 /* ── Ant Design 样式覆写 ── */
 @layer components {
-
   /* 按钮（Primary） */
   .ant-btn-primary {
     background-color: var(--color-primary-600) !important;
@@ -116,7 +116,7 @@
 
   /* 可选：下拉选择器（Select） */
   .ant-select-selector {
-    @apply rounded-lg border-border !important;
+    @apply rounded-lg border-border;
   }
 
   .ant-select-focused .ant-select-selector,

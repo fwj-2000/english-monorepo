@@ -14,20 +14,20 @@ interface UserState {
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set) => ({
+    set => ({
       user: null,
 
-      setUser: (params) => set({ user: params }),
+      setUser: params => set({ user: params }),
       logout: () => set({ user: null }),
 
-      updateToken: (newToken) =>
-        set((state) => {
+      updateToken: newToken =>
+        set(state => {
           if (!state.user) return state
           return { user: { ...state.user, token: newToken } }
         }),
 
-      updateUser: (params) =>
-        set((state) => {
+      updateUser: params =>
+        set(state => {
           if (!state.user) return state
           return {
             user: {
@@ -43,8 +43,8 @@ export const useUserStore = create<UserState>()(
           }
         }),
 
-      updateUserWordNumber: (wordNumber) =>
-        set((state) => {
+      updateUserWordNumber: wordNumber =>
+        set(state => {
           if (!state.user) return state
           return { user: { ...state.user, wordNumber } }
         }),
@@ -54,5 +54,7 @@ export const useUserStore = create<UserState>()(
 )
 
 // ========= 辅助 getter（组件外也能用） =========
-export const getAccessToken = (): string | null => useUserStore.getState().user?.token.accessToken ?? null
-export const getRefreshToken = (): string | null => useUserStore.getState().user?.token.refreshToken ?? null
+export const getAccessToken = (): string | null =>
+  useUserStore.getState().user?.token.accessToken ?? null
+export const getRefreshToken = (): string | null =>
+  useUserStore.getState().user?.token.refreshToken ?? null

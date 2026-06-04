@@ -3,9 +3,7 @@
     <canvas class="w-full h-full" ref="canvasRef"></canvas>
     <div class="absolute top-6 left-6">
       <div class="flex items-center gap-2">
-        <div
-          class="w-10 h-10 bg-white rounded-lg flex items-center justify-center"
-        >
+        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
           <span class="text-primary-600 font-bold text-xl">E</span>
         </div>
         <span class="text-white text-lg font-semibold">English App</span>

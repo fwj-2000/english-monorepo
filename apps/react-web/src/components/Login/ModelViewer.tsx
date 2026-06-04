@@ -1,14 +1,14 @@
-import { useRef, useEffect } from "react"
-import * as THREE from "three"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { useRef, useEffect } from 'react'
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 interface Props {
-  modelType?: "login" | "register"
-  onChangeType?: (type: "login" | "register") => void
+  modelType?: 'login' | 'register'
+  onChangeType?: (type: 'login' | 'register') => void
 }
 
-export default function ModelViewer({ modelType = "login", onChangeType }: Props) {
+export default function ModelViewer({ modelType = 'login', onChangeType }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sceneRef = useRef<THREE.Scene | null>(null)
   const mixerRef = useRef<THREE.AnimationMixer | null>(null)
@@ -22,15 +22,15 @@ export default function ModelViewer({ modelType = "login", onChangeType }: Props
       modelRef.current = null
     }
     const loader = new GLTFLoader()
-    const path = type === "login" ? "/models/login/scene.gltf" : "/models/register/scene.gltf"
-    loader.load(path, (gltf) => {
+    const path = type === 'login' ? '/models/login/scene.gltf' : '/models/register/scene.gltf'
+    loader.load(path, gltf => {
       modelRef.current = gltf.scene
       modelRef.current.scale.set(0.8, 0.8, 0.8)
       scene.add(modelRef.current)
       scene.position.y = -0.8
       if (gltf.animations && gltf.animations.length > 0) {
         mixerRef.current = new THREE.AnimationMixer(modelRef.current)
-        gltf.animations.forEach((anim) => {
+        gltf.animations.forEach(anim => {
           mixerRef.current!.clipAction(anim).play()
         })
       }
@@ -52,8 +52,8 @@ export default function ModelViewer({ modelType = "login", onChangeType }: Props
       canvas,
       antialias: true,
       alpha: true,
-      precision: "highp",
-      powerPreference: "high-performance",
+      precision: 'highp',
+      powerPreference: 'high-performance',
     })
     renderer.setSize(width, height)
 
@@ -82,38 +82,44 @@ export default function ModelViewer({ modelType = "login", onChangeType }: Props
     }
   }, [])
 
-  const loginActive = modelType === "login"
-  const registerActive = modelType === "register"
+  const loginActive = modelType === 'login'
+  const registerActive = modelType === 'register'
 
   return (
-    <div className="relative w-[460px] h-full bg-blue-600">
-      <canvas ref={canvasRef} className="w-full h-full" />
-      <div className="absolute top-6 left-6">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-blue-600 font-bold text-xl">E</span>
+    <div className='relative w-[460px] h-full bg-blue-600'>
+      <canvas ref={canvasRef} className='w-full h-full' />
+      <div className='absolute top-6 left-6'>
+        <div className='flex items-center gap-2'>
+          <div className='w-10 h-10 bg-white rounded-lg flex items-center justify-center'>
+            <span className='text-blue-600 font-bold text-xl'>E</span>
           </div>
-          <span className="text-white text-lg font-semibold">English App</span>
+          <span className='text-white text-lg font-semibold'>English App</span>
         </div>
       </div>
-      <div className="absolute top-6 right-6">
-        <div className="flex items-center gap-1 bg-white/15 rounded-lg p-1">
+      <div className='absolute top-6 right-6'>
+        <div className='flex items-center gap-1 bg-white/15 rounded-lg p-1'>
           <button
-            onClick={() => { loadModel("login"); onChangeType?.("login") }}
+            onClick={() => {
+              loadModel('login')
+              onChangeType?.('login')
+            }}
             className={
               loginActive
-                ? "bg-white text-blue-700 px-4 py-2 rounded-md text-sm font-medium"
-                : "text-white/70 hover:text-white hover:bg-white/10 px-4 py-2 rounded-md text-sm font-medium"
+                ? 'bg-white text-blue-700 px-4 py-2 rounded-md text-sm font-medium'
+                : 'text-white/70 hover:text-white hover:bg-white/10 px-4 py-2 rounded-md text-sm font-medium'
             }
           >
             登录
           </button>
           <button
-            onClick={() => { loadModel("register"); onChangeType?.("register") }}
+            onClick={() => {
+              loadModel('register')
+              onChangeType?.('register')
+            }}
             className={
               registerActive
-                ? "bg-white text-blue-700 px-4 py-2 rounded-md text-sm font-medium"
-                : "text-white/70 hover:text-white hover:bg-white/10 px-4 py-2 rounded-md text-sm font-medium"
+                ? 'bg-white text-blue-700 px-4 py-2 rounded-md text-sm font-medium'
+                : 'text-white/70 hover:text-white hover:bg-white/10 px-4 py-2 rounded-md text-sm font-medium'
             }
           >
             注册

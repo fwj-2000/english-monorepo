@@ -7,13 +7,21 @@
         <div class="flex border-b border-border">
           <button
             @click="loginType = 'login'"
-            :class="loginType === 'login' ? 'flex-1 py-4 text-center text-sm font-semibold text-primary-600 border-b-2 border-primary-600 bg-primary-50/50' : 'flex-1 py-4 text-center text-sm text-text-secondary hover:text-text-primary hover:bg-gray-50 transition-colors duration-200'"
+            :class="
+              loginType === 'login'
+                ? 'flex-1 py-4 text-center text-sm font-semibold text-primary-600 border-b-2 border-primary-600 bg-primary-50/50'
+                : 'flex-1 py-4 text-center text-sm text-text-secondary hover:text-text-primary hover:bg-gray-50 transition-colors duration-200'
+            "
           >
             登录
           </button>
           <button
             @click="loginType = 'register'"
-            :class="loginType === 'register' ? 'flex-1 py-4 text-center text-sm font-semibold text-primary-600 border-b-2 border-primary-600 bg-primary-50/50' : 'flex-1 py-4 text-center text-sm text-text-secondary hover:text-text-primary hover:bg-gray-50 transition-colors duration-200'"
+            :class="
+              loginType === 'register'
+                ? 'flex-1 py-4 text-center text-sm font-semibold text-primary-600 border-b-2 border-primary-600 bg-primary-50/50'
+                : 'flex-1 py-4 text-center text-sm text-text-secondary hover:text-text-primary hover:bg-gray-50 transition-colors duration-200'
+            "
           >
             注册
           </button>

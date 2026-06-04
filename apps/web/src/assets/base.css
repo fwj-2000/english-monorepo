@@ -1,8 +1,8 @@
-@import "tailwindcss";
-@import "./css/design-tokens.css";
+@import 'tailwindcss';
+@import './css/design-tokens.css';
 
 html,
 body,
 #app {
-  @apply h-full w-full
+  @apply h-full w-full;
 }

@@ -1,1 +1,1 @@
-export { WordBook as default } from "@/views/WordBook"
+export { WordBook as default } from '@/views/WordBook'

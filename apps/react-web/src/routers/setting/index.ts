@@ -1,1 +1,1 @@
-export { Setting as default } from "@/views/Setting"
+export { Setting as default } from '@/views/Setting'

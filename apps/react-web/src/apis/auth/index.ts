@@ -7,7 +7,10 @@ const refreshServer = axios.create({
   timeout: 50000,
 })
 
-refreshServer.interceptors.response.use(res => res.data, error => Promise.reject(error))
+refreshServer.interceptors.response.use(
+  res => res.data,
+  error => Promise.reject(error)
+)
 
 export const refreshTokenApi = (data: Omit<Token, 'accessToken'>) =>
   refreshServer.post('/user/refresh-token', data) as Promise<Response<Token>>

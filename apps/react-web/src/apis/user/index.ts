@@ -1,5 +1,11 @@
 import { serverApi, type Response } from '..'
-import type { UserLogin, UserRegister, WebResultUser, AvatarResult, UserUpdate } from '@en/common/user'
+import type {
+  UserLogin,
+  UserRegister,
+  WebResultUser,
+  AvatarResult,
+  UserUpdate,
+} from '@en/common/user'
 
 export const login = (data: UserLogin) =>
   serverApi.post('/user/login', data) as Promise<Response<WebResultUser>>

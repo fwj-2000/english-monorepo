@@ -1,7 +1,7 @@
-import { useRef, useEffect } from "react"
-import * as THREE from "three"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { useRef, useEffect } from 'react'
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 export default function Hologram() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -17,12 +17,12 @@ export default function Hologram() {
     camera.position.set(0, 0, 10)
 
     const loader = new GLTFLoader()
-    loader.load("/models/hologram/scene.gltf", (gltf) => {
+    loader.load('/models/hologram/scene.gltf', gltf => {
       scene.add(gltf.scene)
       gltf.scene.scale.set(4, 4, 4)
       if (gltf.animations?.length) {
         mixer = new THREE.AnimationMixer(gltf.scene)
-        gltf.animations.forEach((clip) => mixer!.clipAction(clip).play())
+        gltf.animations.forEach(clip => mixer!.clipAction(clip).play())
       }
     })
 

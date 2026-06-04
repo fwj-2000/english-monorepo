@@ -39,83 +39,83 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-import type { Word } from '@en/common/word'
-import { getWordBookList } from '@/apis/word-book'
-import { ElMessage } from 'element-plus'
-import { useDebouncedRef } from '@/hooks/useDebouncedRef'
-const wordList = ref<Word[]>([]) //搜索结果
-const isShow = ref(false) //用来展示弹框的显示和隐藏的
+  import { ref } from 'vue'
+  import { Search } from '@element-plus/icons-vue'
+  import type { Word } from '@en/common/word'
+  import { getWordBookList } from '@/apis/word-book'
+  import { ElMessage } from 'element-plus'
+  import { useDebouncedRef } from '@/hooks/useDebouncedRef'
+  const wordList = ref<Word[]>([]) //搜索结果
+  const isShow = ref(false) //用来展示弹框的显示和隐藏的
 
-// let timer: ReturnType<typeof setTimeout> | null = null
-// const search = customRef((track, trigger) => {
-//   let value = '' //默认值
-//   return {
-//     get() {
-//       track() //告诉vue追踪value的值
-//       return value
-//     },
-//     set(newValue: string) {
-//       value = newValue
-//       if (timer) {
-//         clearTimeout(timer)
-//       }
-//       timer = setTimeout(() => {
-//         console.log(value)
-//         if (isShow.value) getList()
-//         trigger() //告诉vue触发value的值，从而触发依赖
-//       }, 500)
-//     },
-//   }
-// }) //搜索的一个值
-const search = useDebouncedRef('', 500, (val) => {
-  if (isShow.value) getList()
-})
+  // let timer: ReturnType<typeof setTimeout> | null = null
+  // const search = customRef((track, trigger) => {
+  //   let value = '' //默认值
+  //   return {
+  //     get() {
+  //       track() //告诉vue追踪value的值
+  //       return value
+  //     },
+  //     set(newValue: string) {
+  //       value = newValue
+  //       if (timer) {
+  //         clearTimeout(timer)
+  //       }
+  //       timer = setTimeout(() => {
+  //         console.log(value)
+  //         if (isShow.value) getList()
+  //         trigger() //告诉vue触发value的值，从而触发依赖
+  //       }, 500)
+  //     },
+  //   }
+  // }) //搜索的一个值
+  const search = useDebouncedRef('', 500, val => {
+    if (isShow.value) getList()
+  })
 
-const getList = async () => {
-  const res = await getWordBookList({ word: search.value, page: 1, pageSize: 20 })
-  if (res.success) {
-    wordList.value = res.data.list
+  const getList = async () => {
+    const res = await getWordBookList({ word: search.value, page: 1, pageSize: 20 })
+    if (res.success) {
+      wordList.value = res.data.list
+    }
   }
-}
-const copyWord = (word: string) => {
-  try {
-    navigator.clipboard.writeText(word) //localhost  / https
-    ElMessage.success('复制成功')
-  } catch (error) {
-    ElMessage.error('复制失败')
+  const copyWord = (word: string) => {
+    try {
+      navigator.clipboard.writeText(word) //localhost  / https
+      ElMessage.success('复制成功')
+    } catch (error) {
+      ElMessage.error('复制失败')
+    }
   }
-}
-window.addEventListener('keydown', (e: KeyboardEvent) => {
-  if (e.key === 'f' && e.ctrlKey) {
-    e.preventDefault()
-    isShow.value = true
-    document.body.style.overflow = 'hidden'
-  }
-  if (e.key === 'Escape') {
-    isShow.value = false
-    search.value = ''
-    document.body.style.overflow = 'auto'
-  }
-})
+  window.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'f' && e.ctrlKey) {
+      e.preventDefault()
+      isShow.value = true
+      document.body.style.overflow = 'hidden'
+    }
+    if (e.key === 'Escape') {
+      isShow.value = false
+      search.value = ''
+      document.body.style.overflow = 'auto'
+    }
+  })
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.3s ease;
-}
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: all 0.3s ease;
+  }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: scale(0.5);
-}
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+    transform: scale(0.5);
+  }
 
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-  transform: scale(1);
-}
+  .fade-enter-to,
+  .fade-leave-from {
+    opacity: 1;
+    transform: scale(1);
+  }
 </style>
