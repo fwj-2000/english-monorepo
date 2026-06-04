@@ -2,15 +2,11 @@
   <header
     class="flex items-center h-16 border-b border-border justify-center sticky top-0 bg-white/95 backdrop-blur z-header"
   >
-    <div class="page-container flex items-center justify-between">
+    <div class="page-container flex items-center justify-between h-full">
       <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <div
-          class="w-9 h-9 bg-primary-600 text-white rounded-lg flex items-center justify-center text-lg font-bold"
-        >
-          E
-        </div>
-        <span class="text-lg font-semibold text-text-primary">English App</span>
+      <div class="flex items-center gap-3 h-full">
+        <img class="h-full rounded-lg" src="../../assets/images/enlogo.png" />
+        <span class="text-lg font-semibold text-text-primary">English Ease</span>
       </div>
 
       <!-- 导航 -->

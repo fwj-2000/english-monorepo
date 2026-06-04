@@ -1,6 +1,6 @@
 <template>
   <div class="mb-8">
-    <h1 class="section-title">登录 English App</h1>
+    <h1 class="section-title">登录 English Ease</h1>
     <p class="section-desc">继续你的英语学习之旅</p>
   </div>
 
