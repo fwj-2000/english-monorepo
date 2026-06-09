@@ -18,6 +18,7 @@ import { useAvatar } from '@/hooks/useAvatar'
 import { useLogin } from '@/hooks/useLogin'
 import { uploadAvatar, updateUser } from '@/apis/user'
 import type { UserUpdate } from '@en/common/user'
+import dayjs from 'dayjs'
 
 export function Setting() {
   const [form] = Form.useForm<UserUpdate>()
@@ -137,7 +138,14 @@ export function Setting() {
               <Form.Item name='isTimingTask' label='定时任务' valuePropName='checked'>
                 <Switch />
               </Form.Item>
-              <Form.Item name='timingTaskTime' label='定时时间'>
+              <Form.Item
+                getValueProps={value => ({
+                  value: value ? dayjs(value, 'HH:mm:ss') : null,
+                })}
+                normalize={value => (value ? value.format('HH:mm:ss') : null)}
+                name='timingTaskTime'
+                label='定时时间'
+              >
                 <TimePicker format='HH:mm:ss' style={{ width: '100%' }} />
               </Form.Item>
               <Form.Item name='address' label='地址'>
